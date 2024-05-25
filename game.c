@@ -6,6 +6,7 @@
 #include "sound.h"
 
 //하이하이
+// 바이바이
 
 // 인게임으로 진입했을 때 시간
 ULONGLONG gameLoopStartTime;
