@@ -5,6 +5,8 @@
 #include "input.h"
 #include "sound.h"
 
+//하이하이
+
 // 인게임으로 진입했을 때 시간
 ULONGLONG gameLoopStartTime;
 // FPS 제어 // 계속 갱신됨
