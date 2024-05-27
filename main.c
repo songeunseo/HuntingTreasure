@@ -5,6 +5,7 @@
 #include "input.h"
 #include "sound.h"
 
+// Áö¾Æ
 extern ULONGLONG startTime;
 int gameMode = STARTGAME;
 
