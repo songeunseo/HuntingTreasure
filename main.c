@@ -54,4 +54,4 @@ void Init()
 	CreateSoundInit();
 	AllocateSound();
 	PlayBGM();
-}
+}//143153513412
