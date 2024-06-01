@@ -54,4 +54,4 @@ void Init()
 	CreateSoundInit();
 	AllocateSound();
 	PlayBGM();
-}
+}//asfwfawgawrg
