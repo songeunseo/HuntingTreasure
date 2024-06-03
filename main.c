@@ -1,5 +1,5 @@
 #include "main.h"
-
+//하이하이방가방가
 int main(void) {
     CursorControl(false);
     srand(time(NULL));
