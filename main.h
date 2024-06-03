@@ -40,7 +40,6 @@
 #define HARD_PENALTY 7
 #define HARD_MONSTER 7
 
-#define DIRECTION 1
 #define PLAYTIME 180
 #define rand_store_chance 5
 
@@ -65,8 +64,8 @@ void recordAndEndOnTime(int x);
 void option();
 void rand_store();
 void penalty_func();
-bool checkGameEnd();
-void endGame(bool result);
+int checkGameEnd();
+void endGame(int result);
 void initializeBoard();
 void printThings();
 void checkobstacle();
@@ -76,6 +75,9 @@ void levelUp();
 void startEasyGame();
 void startNormalGame();
 void startHardGame();
+void checkErasing(int x, int y);
+void drawFavorable();
+void eraseFavorable();
 
 //API
 void slowPrint(unsigned long speed, const char* s);
@@ -90,7 +92,6 @@ double playertick;
 double monstertick;
 int level = 1;
 int endsignal;
-int dx = 1;
 char name[10]; // 사용자 이름 입력받기
 bool gameRunning = true;
 time_t start_time;
@@ -99,18 +100,10 @@ int monsterNum;
 int giftNum;
 int penaltyNum;
 
-typedef struct {
-    int x;
-    int y;
-    int dx;
-    int dy;
-} Point; // 구조체 선언
+int player[1][2] = { 0 };
+int treasure[1][2] = { 0 };
+int gift[HARD_GIFT][2] = { 0 };
+int penalty[HARD_PENALTY][2] = { 0 };
+int monster[HARD_MONSTER][2] = { 0 };
 
-// 구조체 변수 선언
-Point player = { 0 };
-Point treasure = { 0 };
-Point gift[HARD_GIFT] = { 0 };
-Point penalty[HARD_PENALTY] = { 0 };
-Point monster[HARD_MONSTER] = { 0 };
-Point boundary_monster1[HARD_MONSTER] = { 0 };
-Point boundary_monster2[HARD_MONSTER] = { 0 };
+int questionNum = 0;
