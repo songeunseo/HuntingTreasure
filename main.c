@@ -202,30 +202,8 @@ void runMenu(int menuNum)
     }
 }
 
-//은서 메뉴박스 출력
-void printSelectionBox(int x, int y)
-{
-    gotoxy(x, y);
-    puts("┌───────────────────────────────┐");
-    gotoxy(x, y + 1);
-    puts("│");
-    gotoxy(x + 32, y + 1);
-    puts("│");
-    gotoxy(x, y + 2);
-    puts("└───────────────────────────────┘");
-}
-//은서 메뉴박스 지우기
-void eraseSelectionBox(int x, int y)
-{
-    gotoxy(x, y);
-    puts("                                 ");
-    gotoxy(x, y + 1);
-    puts(" ");
-    gotoxy(x + 32, y + 1);
-    puts(" ");
-    gotoxy(x, y + 2);
-    puts("                                 ");
-}
+extern ULONGLONG startTime;
+int gameMode = STARTGAME;
 
 //은서
 // 난이도 선택 메뉴
