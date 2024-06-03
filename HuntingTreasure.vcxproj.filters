@@ -18,39 +18,9 @@
     <ClCompile Include="main.c">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="game.c">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="sound.c">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="draw.c">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="util.c">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="input.c">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="game.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="sound.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="draw.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="util.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
-    <ClInclude Include="input.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

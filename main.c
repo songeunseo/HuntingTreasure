@@ -1,5 +1,4 @@
 #include "main.h"
-
 int main(void) {
     CursorControl(false);
     srand(time(NULL));
@@ -93,7 +92,7 @@ int gameStart() {
         if (current_time - last_update_time >= 1) { // 1초마다
             moveMonster();
             int elapsed_time = current_time - start_time; // 경과된 시간 계산
-            int remaining_time = gametime - elapsed_time; // 남은 시간 계산 
+            int remaining_time = gametime - elapsed_time; // 남은 시간 계산
 
             gotoxy(0, MAP_HEIGHT);
             printf("▤ 점수 : %d\t", score);
@@ -363,33 +362,37 @@ void movePlayer() {
 //지아
 //몬스터 이동
 void moveMonster() {
-    int direction_x = (rand() % 2) == 0 ? 1 : -1, direction_y = (rand() % 2) == 0 ? 1 : -1;
+    for (int i = 0; i < monsterNum; i++) {
+        direction_x[i] = ((rand() % 10) + 1) > monster_x_perc[i] ? 1 : -1;
+        direction_y[i] = ((rand() % 10) + 1) > monster_x_perc[i] ? 1 : -1;
+    }
+
     for (int i = 0; i < monsterNum; i++) {
         gotoxy(monster[i][0], monster[i][1]);
         printf(" ");
         checkErasing(monster[i][0], monster[i][1]);
         if (monster[i][0] == 1) {
             monster[i][0]++;
-            direction_x *= -1;
+            direction_x[i] *= -1;
         }
         else if (monster[i][0] == MAP_WIDTH - 2) {
             monster[i][0]--;
-            direction_x *= -1;
+            direction_x[i] *= -1;
         }
 
         if (monster[i][1] == 1) {
             monster[i][1]++;
-            direction_y *= -1;
+            direction_y[i] *= -1;
         }
         if (monster[i][1] == MAP_HEIGHT - 2) {
             monster[i][1]--;
-            direction_y *= -1;
+            direction_y[i] *= -1;
         }
 
         if (rand() % 2 == 0)
-            monster[i][0] += direction_x;
+            monster[i][0] += direction_x[i];
         else
-            monster[i][1] += direction_y;
+            monster[i][1] += direction_y[i];
 
         gotoxy(monster[i][0], monster[i][1]);
         printf("◆");
@@ -406,12 +409,12 @@ void initializeBoard() {
     treasure[0][0] = rand() % (MAP_WIDTH - 2) + 1;
     treasure[0][1] = rand() % (MAP_HEIGHT - 2) + 1;
 
-    for (int i = 0; i < giftNum; i++) {
+    for (int i = 0; i < NUM_GIFTS; i++) {
         gift[i][0] = rand() % (MAP_WIDTH - 2) + 1;
         gift[i][1] = rand() % (MAP_HEIGHT - 2) + 1;
     }
 
-    for (int i = 0; i < penaltyNum; i++) {
+    for (int i = 0; i < NUM_PENALTY; i++) {
         penalty[i][0] = rand() % (MAP_WIDTH - 2) + 1;
         penalty[i][1] = rand() % (MAP_HEIGHT - 2) + 1;
     }
@@ -433,12 +436,12 @@ void printThings() {
     gotoxy(treasure[0][0], treasure[0][1]);
     printf("★");
 
-    for (int i = 0; i < giftNum; i++) {
+    for (int i = 0; i < NUM_GIFTS; i++) {
         gotoxy(gift[i][0], gift[i][1]);
         printf("G");
     }
 
-    for (int i = 0; i < penaltyNum; i++) {
+    for (int i = 0; i < NUM_PENALTY; i++) {
         gotoxy(penalty[i][0], penalty[i][1]);
         printf("P");
     }
@@ -452,14 +455,14 @@ void checkErasing(int x, int y) {
         SetColor(15);
         printf("★");
     }
-    for (int i = 0; i < EASY_GIFT; i++) {
+    for (int i = 0; i < NUM_GIFTS; i++) {
         if (x == gift[i][0] && y == gift[i][1])
         {
             gotoxy(gift[i][0], gift[i][1]);
             printf("G");
         }
     }
-    for (int i = 0; i < EASY_PENALTY; i++) {
+    for (int i = 0; i < NUM_PENALTY; i++) {
         if (x == penalty[i][0] && y == penalty[i][1])
         {
             gotoxy(penalty[i][0], penalty[i][1]);
@@ -488,7 +491,7 @@ void drawFavorable() {
 void eraseFavorable() {
     for (int i = 0; i <= 16; i++) {
         gotoxy(MAP_WIDTH + 3, 3 + i);
-        puts("                                                                                                           ");
+        puts("                                                         ");
     }
 }
 
@@ -501,7 +504,7 @@ void favorableQuestion() {
     "Q. '더 이상 연락하지 마’의 속뜻은?",
     "Q. 예쁜 디저트를 먹으러 갔을 때",
     "Q. '어떤 옷이 나아?’에 대한 가장 적절한 대답은?",
-    "Q. 세상에서 제일 예쁜 사람이랑 만나기 VS 10억 받고 나랑 만나기",
+    "Q. 세젤예랑 만나고 10억 받기 VS 나랑 만나기",
     "Q. 아까 지나간 사람 엄청 예쁘지?",
     "Q. 전 여자친구랑 나랑 누가 더 나아?",
     "Q. 나 이거 먹고 싶은데, 너도 먹을 거야?"
@@ -522,7 +525,7 @@ void favorableQuestion() {
         "2) 하나도 안 쪘어",
         "2) 그런 게 어디 있어~ 너라서 좋아",
         "2) 화 풀릴 때까지 계속 연락해",
-        "2) 사진 찍고 싶을 수 있으니 기다리기"
+        "2) 사진 찍고 싶을 수 있으니 기다리기",
         "2) 처음보단 두 번째 거가 낫다!",
         "2) 세상에서 제일 예쁜 사람이랑 만날게",
         "2) 응 예쁘더라",
@@ -536,11 +539,13 @@ void favorableQuestion() {
         "3) 평생 볼 생각도 하지마",
         "3) 맛있는지 먹어보겠다며 먼저 먹어보기",
         "3) 둘 다 예쁜데 더 편한 옷이 낫지 않을까?",
-        "3) 이미 세상에서 제일 예쁜 사람이랑 만나고 있는데 10억 어딨지?",
+        "3) 이미 만나고 있는데 10억 어딨지?",
         "3) 하나도 안 예뻤는데?",
         "3) 난 전 여자친구 없는데?",
         "3) 나도 먹고 싶었는데! 같이 먹자"
     };
+
+    time_t pause_start_time = time(NULL);
 
     gotoxy(MAP_WIDTH + 5, 5);
     printf("%s", question[questionNum]);
@@ -554,6 +559,7 @@ void favorableQuestion() {
     printf("답: ");
     int answer;
     scanf("%d", &answer);
+
     if (questionNum == 6) {
         switch (answer) {
         case 1:
@@ -584,6 +590,8 @@ void favorableQuestion() {
         }
     }
     questionNum++;
+    if (questionNum == 9)
+        questionNum = 0;
 }
 
 //지혁
@@ -600,7 +608,7 @@ void recordAndEndOnTime(int x)
 void checkFlag()
 {
     //보물 깃발
-    if (player[0][0] == treasure[0][0] && player[0][1] == treasure[0][1])//플레이어 위치와 보물깃발 위치가 같음
+    if (player[0][0] == treasure[0][0] && player[0][1] == treasure[0][1]) //플레이어 위치와 보물깃발 위치가 같음
     {
         //PlaySound(TEXT("sound\\jump02.wav"), NULL, SND_FILENAME | SND_ASYNC);
         MessageBox(NULL, TEXT("보물을 발견하셨습니다!"), TEXT("TREASURE"), MB_OK);
@@ -630,12 +638,10 @@ void checkFlag()
             drawFavorable();
             favorableQuestion();
             eraseFavorable();
-            //option(); //선택지 출력 후 선택에 따라 점수 변경
             //if ((rand() % 10) > rand_store_chance)//확률적으로 상점 열림
             //    rand_store();
         }
     }
-
     for (int i = 3; i < 5; i++) {
         if (player[0][0] == gift[i][0] && player[0][1] == gift[i][1]) {
             gift[i][0] = 0, gift[i][1] = 0;
@@ -643,25 +649,64 @@ void checkFlag()
         }
     }
 
+    if (player[0][0] == gift[5][0] && player[0][1] == gift[5][1]) {
+        gift[5][0] = 0, gift[5][1] = 0;
+        // 보물 위아래 방향 알려줌
+        drawFavorable();
+        gotoxy(MAP_WIDTH + 5, 5);
+        printf("엿보기 안경 획득!");
+        gotoxy(MAP_WIDTH + 5, 6);
+        if (player[0][1] > treasure[0][1]) {
+            printf("보물이 현재 위치보다 위에 있습니다.");
+        }
+        else if (player[0][1] == treasure[0][1])
+            printf("보물은 현재 위치의 y축과 동일합니다.");
+        else {
+            printf("보물이 현재 위치보다 아래에 있습니다.");
+        }
+        Sleep(1000);
+        eraseFavorable();
+    }
+    if (player[0][0] == gift[6][0] && player[0][1] == gift[6][1]) {
+        gift[6][0] = 0, gift[6][1] = 0;
+        // 보물 좌우 방향 알려줌
+        drawFavorable();
+        gotoxy(MAP_WIDTH + 5, 5);
+        printf("엿보기 안경 획득!");
+        gotoxy(MAP_WIDTH + 5, 6);
+        if (player[0][0] < treasure[0][0])
+            printf("보물이 현재 위치보다 오른쪽에 있습니다.");
+        else if (player[0][0] == treasure[0][0])
+            printf("보물은 현재 위치의 x축과 동일합니다.");
+        else
+            printf("보물이 현재 위치보다 왼쪽에 있습니다.");
+        Sleep(1000);
+        eraseFavorable();
+    }
+
+
     //벌칙 깃발
-    for (int i = 0; i < EASY_PENALTY; i++)
+    for (int i = 0; i < NUM_PENALTY; i++)
     {
         if (player[0][0] == penalty[i][0] && player[0][1] == penalty[i][1])
         {
             //PlaySound(TEXT("sound\\jump02.wav"), NULL, SND_FILENAME | SND_ASYNC);
             penalty[i][0] = 0, penalty[i][1] = 0;// 접촉한 깃발 제거
-            score -= 10;
+            score -= 100;
             penalty_func();
         }
     }
-    for (int i = 0; i < EASY_MONSTER; i++)
+
+
+    // 몬스터와 접촉시 다시 출력
+    for (int i = 0; i < monsterNum; i++)
     {
         if (monster[i][0] == treasure[0][0] && monster[i][1] == treasure[0][1]) {
             gotoxy(treasure[0][0], treasure[0][1]);
             SetColor(15);
             printf("★");
         }
-        for (int j = 0; j < EASY_GIFT; j++) {
+        for (int j = 0; j < NUM_GIFTS; j++) {
             if (monster[i][0] == gift[j][0] && monster[i][1] == gift[j][1])
             {
                 gotoxy(gift[j][0], gift[j][1]);
@@ -676,7 +721,7 @@ void checkFlag()
 //장애물 접촉
 void checkobstacle()
 {
-    for (int i = 0; i < EASY_MONSTER; i++)
+    for (int i = 0; i < monsterNum; i++)
     {
         if (player[0][0] == monster[i][0] && player[0][1] == monster[i][1])
         {
@@ -687,43 +732,8 @@ void checkobstacle()
     }
 }
 
-// 지혁
-//깃발 접촉시 선택지 제공,점수 증가
-void option()
-{
-    char benefit_str[5][100] = { "aaa","bbb","ccc","ddd","eee" };//선택지 갯수 조절 필요, 선택지 입력 필요
-    int benefit_str_score[5] = { 100, 200, 300, 400, 500 }; // 점수증가 수치 조절 필요
-    int a[3] = { 0 };
-    int temp1;
-
-    for (int i = 0; i < 3; i++) //중복 없는 0~4사이 난수 3개 생성
-    {
-        a[i] = (rand() % 5);
-        for (int j = 0; j < i; j++)
-        {
-            if (a[i] == a[j])
-                i--;
-        }
-    }
-    gotoxy(20, 41); // 선택지 출력 위치 조절 필요
-    printf("1.%s\n2.%s\n3.%s\n", benefit_str[a[0]], benefit_str[a[1]], benefit_str[a[2]]);//선택지 출력
-    scanf("%d", &temp1);//선택지 선택 값 입력
-    switch (temp1)//각 선택지에 해당하는 점수를 총 점수에 더하기
-    {
-    case 1:
-        score += benefit_str_score[a[0]];
-        break;
-    case 2:
-        score += benefit_str_score[a[1]];
-        break;
-    case 3:
-        score += benefit_str_score[a[2]];
-        break;
-    }
-}
-
 //지혁
-//일정확률로 나오는 상점r
+//일정확률로 나오는 상점
 void rand_store()
 {
     int temp1;
@@ -878,21 +888,15 @@ void levelUp() {
     }
 }
 void startEasyGame() {
-    giftNum = EASY_GIFT;
-    penaltyNum = EASY_PENALTY;
-    monsterNum = HARD_PENALTY;
+    monsterNum = EASY_MONSTER;
     gameStart();
 }
 void startNormalGame() {
-    giftNum = NORMAL_GIFT;
-    penaltyNum = NORMAL_PENALTY;
-    monsterNum = NORMAL_PENALTY;
+    monsterNum = NORMAL_MONSTER;
     gameStart();
 }
 void startHardGame() {
-    giftNum = HARD_GIFT;
-    penaltyNum = HARD_PENALTY;
-    monsterNum = HARD_PENALTY;
+    monsterNum = HARD_MONSTER;
     gameStart();
 }
 

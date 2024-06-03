@@ -24,21 +24,12 @@
 
 #define MAP_WIDTH 60
 #define MAP_HEIGHT 30
-#define NUM_GIFTS 10
+
+#define NUM_GIFTS 7
 #define NUM_PENALTY 5
-#define NUM_MONSTER 3
-
-#define EASY_GIFT 5
-#define EASY_PENALTY 3
-#define EASY_MONSTER 3
-
-#define NORMAL_GIFT 7
-#define NORMAL_PENALTY 5
-#define NORMAL_MONSTER 5
-
-#define HARD_GIFT 9
-#define HARD_PENALTY 7
-#define HARD_MONSTER 7
+#define EASY_MONSTER 5
+#define NORMAL_MONSTER 7
+#define HARD_MONSTER 9
 
 #define PLAYTIME 180
 #define rand_store_chance 5
@@ -95,6 +86,11 @@ int endsignal;
 char name[10]; // 사용자 이름 입력받기
 bool gameRunning = true;
 time_t start_time;
+int monsterNum;
+int direction_x[HARD_MONSTER];
+int direction_y[HARD_MONSTER];
+int monster_x_perc[5] = { 3,4,5,6,7 };
+int monster_y_perc[5] = { 7,6,5,4,3 };
 
 int monsterNum;
 int giftNum;
@@ -102,8 +98,8 @@ int penaltyNum;
 
 int player[1][2] = { 0 };
 int treasure[1][2] = { 0 };
-int gift[HARD_GIFT][2] = { 0 };
-int penalty[HARD_PENALTY][2] = { 0 };
+int gift[NUM_GIFTS][2] = { 0 };
+int penalty[NUM_PENALTY][2] = { 0 };
 int monster[HARD_MONSTER][2] = { 0 };
 
 int questionNum = 0;
