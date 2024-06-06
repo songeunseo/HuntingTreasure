@@ -1,9 +1,9 @@
-#pragma once
+ï»¿#pragma once
 #pragma comment(lib, "winmm.lib")
 
 #define _CRT_SECURE_NO_WARNINGS
 
-//Çì´õÆÄÀÏ
+//í—¤ë”íŒŒì¼
 #include <stdio.h>
 #include <stdlib.h>
 #include <conio.h>
@@ -16,7 +16,7 @@
 #include <wchar.h>
 #include <locale.h>
 
-//±âÈ£»ó¼ö
+//ê¸°í˜¸ìƒìˆ˜
 #define MENU_LEFT_ALIGN 15
 #define MENU_TOP_ALIGN 9
 #define MENU_LINE_SPACE 3
@@ -34,7 +34,7 @@
 #define PLAYTIME 180
 #define rand_store_chance 5
 
-// ¿øÇüÇÔ¼ö
+// ì›í˜•í•¨ìˆ˜
 void printArea();
 void getUserName();
 void gameRule();
@@ -76,14 +76,14 @@ void SetColor(int colorNum);
 void gotoxy(int x, int y);
 void CursorControl(bool flag);
 
-// º¯¼ö
-int gametime = 180;//°ÔÀÓ ½Ã°£
+// ë³€ìˆ˜
+int gametime = 180;//ê²Œì„ ì‹œê°„
 int score = 0;
 double playertick = 31.25;
 double monstertick = 125;
 int level = 1;
 int endsignal;
-char name[10]; // »ç¿ëÀÚ ÀÌ¸§ ÀÔ·Â¹Ş±â
+char name[10]; // ì‚¬ìš©ì ì´ë¦„ ì…ë ¥ë°›ê¸°
 bool gameRunning = true;
 time_t start_time;
 int monsterNum;
@@ -101,4 +101,30 @@ int treasure[1][2] = { 0 };
 int gift[NUM_GIFTS][2] = { 0 };
 int penalty[NUM_PENALTY][2] = { 0 };
 int monster[HARD_MONSTER][2] = { 0 };
+<<<<<<< HEAD
 int questionNum = 0;
+=======
+
+int questionNum = 0;
+
+char* heart =
+"                              \n"
+"         ....    ....         \n"
+"       .......  .......       \n"
+"      ..................      \n"
+"      ..................      \n"
+"      ..................      \n"
+"      ..................      \n"
+"      ..................      \n"
+"      ..................      \n"
+"      ..................      \n"
+"      ..................      \n"
+"       ................       \n"
+"        ..............        \n"
+"         ............         \n"
+"          ..........          \n"
+"           ........           \n"
+"            ......            \n"
+"              ...             \n"
+"                              \n";
+>>>>>>> origin/master

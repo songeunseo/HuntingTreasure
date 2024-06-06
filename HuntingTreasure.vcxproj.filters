@@ -23,5 +23,22 @@
     <ClInclude Include="main.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="sound.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="..\gamestart.wav">
+      <Filter>리소스 파일</Filter>
+    </Media>
+    <Media Include="sound\gamerule.wav">
+      <Filter>리소스 파일</Filter>
+    </Media>
+    <Media Include="sound\gaming.wav">
+      <Filter>리소스 파일</Filter>
+    </Media>
+    <Media Include="sound\gameover.wav">
+      <Filter>리소스 파일</Filter>
+    </Media>
   </ItemGroup>
 </Project>

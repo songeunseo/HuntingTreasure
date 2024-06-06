@@ -132,6 +132,12 @@
   <ItemGroup>
     <ClInclude Include="main.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Media Include="..\gamestart.wav" />
+    <Media Include="sound\gameover.wav" />
+    <Media Include="sound\gamerule.wav" />
+    <Media Include="sound\gaming.wav" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
