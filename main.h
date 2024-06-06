@@ -103,3 +103,4 @@ int penalty[NUM_PENALTY][2] = { 0 };
 int monster[HARD_MONSTER][2] = { 0 };
 
 int questionNum = 0;
+
