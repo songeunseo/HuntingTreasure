@@ -1,4 +1,17 @@
 ﻿#include "main.h"
+
+void getConsoleSize(int* width, int* height) {
+    CONSOLE_SCREEN_BUFFER_INFO csbi;
+    int cols, rows;
+
+    GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
+    cols = csbi.srWindow.Right - csbi.srWindow.Left + 1;
+    rows = csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
+
+    *width = cols;
+    *height = rows;
+}
+
 int main(void) {
     CursorControl(false);
     srand(time(NULL));
@@ -51,22 +64,63 @@ void printArea()
 
 //게임 설명
 void gameRule() {
+    int screenWidth, screenHeight;
+    int xPos, yPos;
+
     PlaySound(NULL, NULL, 0); // 현재 재생 중인 사운드를 중지
     PlaySound(TEXT("sound\\gamerule.wav"), NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
     system("cls");
-    printf("Skip을 하려면 엔터키를 누르세요.\n\n");
-    slowPrint(50, "마계에서 인간 세계로 내려온 마녀인 당신!\n\n");
-    slowPrint(50, "마계의 여왕이 되기 위해서는, 인간들의 하트를 빼앗아야 합니다.\n");
-    slowPrint(50, "인간들에게 호감을 얻고, 하트를 획득해보세요!\n\n");
-    slowPrint(50, "플레이어는 ♥으로 표시되며, 깃발은 ▶으로 표시됩니다.\n");
-    slowPrint(50, "플레이어는 방향키를 이용해 이동할 수 있습니다.\n");
-    slowPrint(50, "제한된 시간 내에 가능한 많은 호감도를 획득하여 높은 하트를 얻으면 여왕이 될 수 있습니다.\n\n");
-    slowPrint(50, "게임을 시작하려면 아무 키나 누르세요...");
+
+    getConsoleSize(&screenWidth, &screenHeight);
+
+    const char* messages[] = {
+        "마계에서 인간 세계로 내려온 마녀인 당신!",
+        "마계의 여왕이 되기 위해서는, 인간들의 하트를 빼앗아야 합니다.",
+        "인간들에게 호감을 얻고, 하트를 획득해보세요!",
+        " ",
+        "플레이어는 ♥으로 표시되며, 깃발은 ▶으로 표시됩니다.",
+        "플레이어는 방향키를 이용해 이동할 수 있습니다.",
+        "제한된 시간 내에 가능한 많은 호감도를 획득하여 높은 하트를 얻으면 여왕이 될 수 있습니다.",
+        "게임을 시작하려면 아무 키나 누르세요..."
+    };
+
+    // 프레임 그리기
+    for (int i = 0; i < screenHeight; i++) {
+        gotoxy(0, i);
+        if (i == 0) {
+            printf("┌");
+            for (int j = 0; j < screenWidth - 2; j++) printf("─");
+            printf("┐");
+        }
+        else if (i == screenHeight - 1) {
+            printf("└");
+            for (int j = 0; j < screenWidth - 2; j++) printf("─");
+            printf("┘");
+        }
+        else {
+            printf("│");
+            gotoxy(screenWidth - 1, i);
+            printf("│");
+        }
+    }
+
+    // Print top message
+    xPos = (screenWidth - strlen("Skip을 하려면 엔터키를 누르세요.")) / 2;
+    gotoxy(xPos, 1); // 화면 상단 중앙에 배치
+    printf("Skip을 하려면 엔터키를 누르세요.");
+
+    // Print main messages
+    yPos = (screenHeight - 7) / 2; // 중앙에서부터 배치 시작
+    for (int i = 0; i < 8; i++) {
+        xPos = (screenWidth - strlen(messages[i])) / 2;
+        gotoxy(xPos, yPos + i);
+        slowPrint(45, messages[i]);
+    }
+
     _getch();
+    PlaySound(NULL, NULL, 0);
     difficultyMenu();
 }
-
-//메뉴 화면
 void menu() {
     initGameVariables(); // 게임 변수 초기화
     system("cls");
@@ -287,11 +341,17 @@ int gameStart() {
             printf("▤ 남은 시간: %d분 %d초", remaining_time / 60, remaining_time % 60);
             gotoxy(0, MAP_HEIGHT + 1);
             printf("▤ 현재 레벨: %d", level); // 현재 레벨 출력
+            if (_kbhit()) {
+                char key = _getch();
+                if (key == 112) {
+                    remaining_time = 0;
+                }
+            }
             recordAndEndOnTime(remaining_time);
         }
-
         if (checkGameEnd())
             break;
+        
         Sleep(5); // 과도한 반복 방지
     }
     return 0;
@@ -750,15 +810,46 @@ int checkGameEnd() {
 }
 //게임 종료 화면
 void endGame(int result) {
+    system("cls");
+    int ch;
+    while ((ch = getchar()) != '\n' && ch != EOF);
+
+    PlaySound(NULL, NULL, 0);
+    int screenWidth, screenHeight;
+    getConsoleSize(&screenWidth, &screenHeight);
+
     if (result) {
         calculateScore();
     }
     else {
-        system("cls");
-        PlaySound(NULL, NULL, 0);
         PlaySound(TEXT("sound\\gameover.wav"), NULL, SND_FILENAME | SND_ASYNC);
-        printf("GAME OVER!\n");
-        printf("시간이 종료되었습니다.");
+
+        const char* gameOverMessage[] = {
+            " _____                           _____                     _ ",
+            "|  __ \\                         |  _  |                   | |",
+            "| |  \\/  __ _  _ __ ___    ___  | | | |__   __  ___  _ __ | |",
+            "| | __  / _` || '_ ` _ \\  / _ \\ | | | |\\ \\ / / / _ \\| '__|| |",
+            "| |_\\ \\| (_| || | | | | ||  __/ \\ \\_/ / \\ V / |  __/| |   |_|",
+            " \\____/ \\__,_||_| |_| |_| \\___|  \\___/   \\_/   \\___||_|   (_)",
+            "                                                             ",
+            "                                                             "
+        };
+        const char* gameOverMessage2 = "시간이 종료되었습니다.";
+
+        int numLines = sizeof(gameOverMessage) / sizeof(gameOverMessage[0]);
+        int startY = (screenHeight - numLines) / 2;
+
+        for (int i = 0; i < numLines; i++) {
+            int xPos = (screenWidth - strlen(gameOverMessage[i])) / 2;
+            gotoxy(xPos, startY + i);
+            printf("%s", gameOverMessage[i]);
+        }
+
+        int xPos2 = (screenWidth - strlen(gameOverMessage2)) / 2;
+        gotoxy(xPos2, startY + numLines + 1);
+        printf("%s", gameOverMessage2);
+        Sleep(7000);
+        menu();
     }
 }
 // 점수 계산
@@ -770,32 +861,42 @@ void calculateScore() {
         "깜짝 놀랐을 때 나오는 하트.\n",
         "설레이거나 호감이 생기기 시작할 때 생기는 하트.\n",
         "친구들 사이의 우정의 하트.\n",
-        "사랑이 시작할 때 나오는 하트.",
-        "진실한 사랑의 하트."
+        "사랑이 시작할 때 나오는 하트.\n",
+        "진실한 사랑의 하트.\n"
     };
 
     PlaySound(NULL, NULL, 0);
     PlaySound(TEXT("sound\\levelup.wav"), NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
     system("cls");
 
+    int screenWidth, screenHeight;
+    getConsoleSize(&screenWidth, &screenHeight);
+
     bool levelUpCondition = score >= requiredScore[level - 1];
     int heartIndex = score / 300 - 1;
 
     if (heartIndex < 0) { // 0점
+        gotoxy((screenWidth - 10) / 2, screenHeight / 2); // "You failed"를 중앙에 배치
         printf("You failed\n\n");
         Sleep(2000);
         menu();
         return;
     }
 
+    gotoxy((screenWidth - strlen(heartColors[heartIndex])) / 2, (screenHeight / 2) - 2);
     printf("%s\n", heartColors[heartIndex]);
+
+    gotoxy((screenWidth - 1) / 2, screenHeight / 2); // 하트 심볼을 중앙에 배치
     SetColor(heartColorsCode[heartIndex]);
-    printf("%s", heart);
+    printf("%s", "♥"); // 심볼 자체를 출력
     SetColor(15);
+
+    gotoxy((screenWidth - strlen(heartDescriptions[heartIndex])) / 2, (screenHeight / 2) + 2);
     printf("%s", heartDescriptions[heartIndex]);
     Sleep(5000);
 
     if (heartIndex < level || (heartIndex == 2 && !levelUpCondition)) {
+        gotoxy((screenWidth - 10) / 2, screenHeight / 2); // "You failed"를 중앙에 배치
         printf("You failed");
         Sleep(2000);
         menu();
@@ -804,7 +905,6 @@ void calculateScore() {
         levelUp();
     }
 }
-
 // 난이도별로 조작
 void levelUp() {
     initGameVariables();
@@ -814,18 +914,39 @@ void levelUp() {
     int ch;
     while ((ch = getchar()) != '\n' && ch != EOF);
 
+    int screenWidth, screenHeight;
+    getConsoleSize(&screenWidth, &screenHeight);
+
     if (level != 3) {
-        printf(" _                         _   _   _         _ \n");
-        printf("| |                       | | | | | |       | |\n");
-        printf("| |      ___ __   __  ___ | | | | | | _ __  | |\n");
-        printf("| |     / _ \\\\ \\ / / / _ \\| | | | | || '_ \\ | |\n");
-        printf("| |____|  __/ \\ V / |  __/| | | |_| || |_) ||_|\n");
-        printf("\\_____/ \\___|  \\_/   \\___||_|  \\___/ | .__/ (_)\n");
-        printf("                                     | |       \n");
-        printf("                                     |_|       \n");
-        Sleep(2000);
-        printf("\n다음 레벨로 이동합니다...");
-        printf("\n이동하려면 아무 키나 누르세요.");
+        const char* levelUpMessage[] = {
+            " _                         _   _   _         _ ",
+            "| |                       | | | | | |       | |",
+            "| |      ___ __   __  ___ | | | | | | _ __  | |",
+            "| |     / _ \\\\ \\ / / / _ \\| | | | | || '_ \\ | |",
+            "| |____|  __/ \\ V / |  __/| | | |_| || |_) ||_|",
+            "\\_____/ \\___|  \\_/   \\___||_|  \\___/ | .__/ (_)",
+            "                                     | |       ",
+            "                                     |_|       "
+        };
+
+        int numLines = sizeof(levelUpMessage) / sizeof(levelUpMessage[0]);
+        int startY = (screenHeight - numLines) / 2;
+
+        for (int i = 0; i < numLines; i++) {
+            int xPos = (screenWidth - strlen(levelUpMessage[i])) / 2;
+            gotoxy(xPos, startY + i);
+            printf("%s", levelUpMessage[i]);
+        }
+        const char* nextLevelMessage1 = "다음 레벨로 이동합니다...";
+        const char* nextLevelMessage2 = "이동하려면 아무 키나 누르세요.";
+        int xPos1 = (screenWidth - strlen(nextLevelMessage1)) / 2;
+        int xPos2 = (screenWidth - strlen(nextLevelMessage2)) / 2;
+
+        gotoxy(xPos1, startY + numLines + 2);
+        printf("%s", nextLevelMessage1);
+        gotoxy(xPos2, startY + numLines + 3);
+        printf("%s", nextLevelMessage2);
+
         _getch();
 
         switch (level) {
@@ -841,18 +962,44 @@ void levelUp() {
     }
     else {
         PlaySound(TEXT("sound\\gameclear.wav"), NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
-        printf(" _____                           _____  _                     _ \n");
-        printf("|  __ \\                         /  __ \\| |                   | |\n");
-        printf("| |  \\/  __ _  _ __ ___    ___  | /  \\/| |  ___   __ _  _ __ | |\n");
-        printf("| | __  / _` || '_ ` _ \\  / _ \\ | |    | | / _ \\ / _` || '__|| |\n");
-        printf("| |_\\ \\| (_| || | | | | ||  __/ | \\__/\\| ||  __/| (_| || |   |_|\n");
-        printf(" \\____/ \\__,_||_| |_| |_| \\___|  \\____/|_| \\___| \\__,_||_|   (_)\n");
-        printf("                                                                \n");
-        printf("                                                                \n");
-        printf("당신은 마계의 여왕이 되는데 성공하셨습니다.");
+
+        const char* gameClearMessage[] = {
+            " _____                           _____  _                     _ ",
+            "|  __ \\                         /  __ \\| |                   | |",
+            "| |  \\/  __ _  _ __ ___    ___  | /  \\/| |  ___   __ _  _ __ | |",
+            "| | __  / _` || '_ ` _ \\  / _ \\ | |    | | / _ \\ / _` || '__|| |",
+            "| |_\\ \\| (_| || | | | | ||  __/ | \\__/\\| ||  __/| (_| || |   |_|",
+            " \\____/ \\__,_||_| |_| |_| \\___|  \\____/|_| \\___| \\__,_||_|   (_)",
+            "                                                                ",
+            "                                                                "
+        };
+
+        const char* queenMessage = "당신은 마계의 여왕이 되는데 성공하셨습니다.";
+
+        int numLines = sizeof(gameClearMessage) / sizeof(gameClearMessage[0]);
+        int startY = (screenHeight - numLines) / 2;
+
+        for (int i = 0; i < numLines; i++) {
+            int xPos = (screenWidth - strlen(gameClearMessage[i])) / 2;
+            gotoxy(xPos, startY + i);
+            printf("%s", gameClearMessage[i]);
+        }
+
+        int xPosQueen = (screenWidth - strlen(queenMessage)) / 2;
+        gotoxy(xPosQueen, startY + numLines + 1);
+        printf("%s", queenMessage);
+
         Sleep(2000);
-        printf("\n\n메뉴로 다시 돌아갑니다...");
-        printf("\n이동하려면 아무 키나 누르세요.");
+        const char* menuMessage1 = "메뉴로 다시 돌아갑니다...";
+        const char* menuMessage2 = "이동하려면 아무 키나 누르세요.";
+        int xPosMenu1 = (screenWidth - strlen(menuMessage1)) / 2;
+        int xPosMenu2 = (screenWidth - strlen(menuMessage2)) / 2;
+
+        gotoxy(xPosMenu1, startY + numLines + 3);
+        printf("%s", menuMessage1);
+        gotoxy(xPosMenu2, startY + numLines + 4);
+        printf("%s", menuMessage2);
+
         _getch();
         menu();
     }
