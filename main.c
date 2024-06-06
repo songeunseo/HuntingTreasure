@@ -798,53 +798,58 @@ void calculateScore() {
     gotoxy(10, 3);
     printf("당신의 score는 %d점입니다.", score);
     Sleep(2000);
-
-    gotoxy(10, 3);
-    printf("                             ");
-    gotoxy(15, 3);
-    if (score < 100) {
+    system("cls");
+    if (score < 300) {
         printf("You failed\n\n");
         Sleep(2000);
         endsignal = 0;
         score = 0;
         menu();
     }
-    else if (100 <= score && score < 300) {
-        printf("벌꿀색 하트");
-        gotoxy(10, 4);
-        printf("깜짝 놀랐을 때 나오는 하트.");
-        gotoxy(10, 8);
+    else if (300 <= score && score < 600) {
+        printf("벌꿀색 하트\n");
+        SetColor(14);
+        printf("%s", heart);
+        SetColor(15);
+        printf("\n깜짝 놀랐을 때 나오는 하트.\n");
+        Sleep(2000);
         printf("You failed");
         Sleep(2000);
         endsignal = 0;
         score = 0;
         menu();
     }
-    else if (300 <= score && score < 500) {
-        printf("오렌지 하트");
-        gotoxy(10, 4);
-        printf("설레이거나 호감이 생기기 시작할 때 생기는 하트.");
-        gotoxy(10, 8);
+    else if (600 <= score && score < 900) {
+        printf("오렌지 하트\n");
+        SetColor(4);
+        printf("%s", heart);
+        SetColor(15);
+        printf("\n설레이거나 호감이 생기기 시작할 때 생기는 하트.\n");
+        Sleep(2000);
         printf("You failed");
         Sleep(2000);
         endsignal = 0;
         score = 0;
         menu();
     }
-    else if (500 <= score && score < 1000) {
-        printf("그린 하트");
-        gotoxy(10, 4);
-        printf("친구들 사이의 우정의 하트.");
-        gotoxy(10, 8);
+    else if (900 <= score && score < 1200) {
+        printf("그린 하트\n");
+        SetColor(10);
+        printf("%s", heart);
+        SetColor(15);
+        printf("친구들 사이의 우정의 하트.\n");
+        Sleep(2000);
         printf("You failed");
         Sleep(2000);
         endsignal = 0;
         score = 0;
         menu();
     }
-    else if (1000 <= score && score < 3000) {
-        printf("핑크 하트");
-        gotoxy(10, 4);
+    else if (1200 <= score && score < 1500) {
+        printf("핑크 하트\n");
+        SetColor(13);
+        printf("%s", heart);
+        SetColor(15);
         printf("사랑이 시작할 때 나오는 하트.");
         Sleep(2000);
         endsignal = 0;
@@ -852,8 +857,10 @@ void calculateScore() {
         levelUp();
     }
     else {
-        printf("레드 하트");
-        gotoxy(10, 4);
+        printf("레드 하트\n");
+        SetColor(12);
+        printf("%s", heart);
+        SetColor(15);
         printf("진실한 사랑의 하트.");
         Sleep(2000);
         endsignal = 0;

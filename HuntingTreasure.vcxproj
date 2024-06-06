@@ -131,7 +131,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h" />
-    <ClInclude Include="sound.h" />
   </ItemGroup>
   <ItemGroup>
     <Media Include="..\gamestart.wav" />
