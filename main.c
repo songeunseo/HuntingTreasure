@@ -62,7 +62,6 @@ int gameStart() {
     printThings();
 
     time_t start_time = time(NULL);
-    time_t last_update_time = start_time;
 
     for (int i = 0; i < monsterNum; i++) {
         gotoxy(monster[i][0], monster[i][1]);
