@@ -54,14 +54,19 @@ int gameStart();
 void movePlayer();
 void moveMonster();
 
-void initializeBoard();
+void initBoard();
 void initRandomPosition(int position[2]);
+void initTick();
+void initGameVariables();
+
 void printThings();
 void checkErasing(int x, int y);
 
 void drawSideBox();
 void eraseSideBox();
 void favorableQuestion();
+void eventPrint();
+void revealTreasureDirection(int i);
 
 void recordAndEndOnTime(int x);
 
@@ -71,7 +76,7 @@ void checkGift();
 void checkPenalty();
 void checkObstacle();
 
-void rand_store();
+//void rand_store();
 void penalty_func();
 void penaltyPrint(int x);
 
@@ -82,8 +87,7 @@ void startHardGame();
 
 int checkGameEnd();
 void endGame(int result);
-void initializeTick();
-void initializeGameVariables();
+
 //void printAtPosition(int position[2], const char* symbol, int color);
 void calculateScore();
 
