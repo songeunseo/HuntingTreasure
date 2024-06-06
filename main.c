@@ -1,4 +1,5 @@
 ﻿#include "main.h"
+#define BAR_LENGTH 40
 
 void getConsoleSize(int* width, int* height) {
     CONSOLE_SCREEN_BUFFER_INFO csbi;
@@ -12,6 +13,25 @@ void getConsoleSize(int* width, int* height) {
     *height = rows;
 }
 
+// 진행 바 생성 함수
+void printProgressBar(int elapsed, int total) {
+    int position = (int)(((double)elapsed / total) * BAR_LENGTH);
+    printf("%02d:%02d ", elapsed / 60, elapsed % 60);  // 경과 시간 출력
+    for (int i = 0; i < BAR_LENGTH; i++) {
+        if (i == position) {
+            printf("|");
+        }
+        else if (i < position) {
+            printf("=");
+        }
+        else {
+            printf("-");
+        }
+    }
+    printf(" %02d:%02d", total / 60, total % 60);  // 총 시간 출력
+    fflush(stdout);  // Flush the output buffer to ensure the progress bar is printed
+}
+
 int main(void) {
     CursorControl(false);
     srand(time(NULL));
@@ -23,12 +43,7 @@ int main(void) {
 }
 
 void getUserName() {
-    system("cls");
     printArea();
-    gotoxy(10, 3);
-    printf("0:23 ━━■━━━━━━ 3:09");
-    gotoxy(10, 4);
-    printf("        ◀ ■■ ▶    ");
     gotoxy(10, 6);
     printf("당신의 이름은 무엇인가요? ");
     scanf("%s", &name);
@@ -39,7 +54,7 @@ void getUserName() {
 void printArea()
 {
     system("cls");
-    gotoxy(0, 0);
+    gotoxy(0, 1);
     printf("┌");
     for (int i = 0; i < MAP_WIDTH - 2; i++) {
         printf("─");
@@ -296,18 +311,12 @@ int gameStart() {
     PlaySound(TEXT("sound\\gaming.wav"), NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
 
     initBoard();
-
     printArea();
     printThings();
 
     time_t start_time = time(NULL);
-
-    for (int i = 0; i < monsterNum; i++) {
-        gotoxy(monster[i][0], monster[i][1]);
-        printf("◆");
-    }
-
     clock_t player_std_time, monster_std_time, player_time, monster_time;
+
     double player_duration, monster_duration;
     player_std_time = clock();
     monster_std_time = clock();
@@ -336,17 +345,12 @@ int gameStart() {
         if (current_time - start_time >= 1) {// 1초마다
             int elapsed_time = current_time - start_time; // 경과된 시간 계산
             int remaining_time = gametime - elapsed_time; // 남은 시간 계산
-            gotoxy(0, MAP_HEIGHT);
-            printf("▤ 점수 : %d\t", score);
-            printf("▤ 남은 시간: %d분 %d초", remaining_time / 60, remaining_time % 60);
-            gotoxy(0, MAP_HEIGHT + 1);
+            gotoxy(4, 0);
+            printProgressBar(elapsed_time, gametime);
+            gotoxy(0, MAP_HEIGHT+1);
+            printf("▤ 점수 : %03d\t", score);
+            /*printf("▤ 남은 시간: %d분 %d초", remaining_time / 60, remaining_time % 60);*/
             printf("▤ 현재 레벨: %d", level); // 현재 레벨 출력
-            if (_kbhit()) {
-                char key = _getch();
-                if (key == 112) {
-                    remaining_time = 0;
-                }
-            }
             recordAndEndOnTime(remaining_time);
         }
         if (checkGameEnd())
@@ -365,10 +369,10 @@ void movePlayer() {
         printf(" ");
         switch (move) {
         case 72: // 위쪽 방향키
-            player[0][1] = player[0][1] > 1 ? player[0][1] - 1 : 1;
+            player[0][1] = player[0][1] > 2 ? player[0][1] - 1 : 2;
             break;
         case 80: // 아래쪽 방향키
-            player[0][1] = player[0][1] < MAP_HEIGHT - 2 ? player[0][1] + 1 : MAP_HEIGHT - 2;
+            player[0][1] = player[0][1] < MAP_HEIGHT - 1 ? player[0][1] + 1 : MAP_HEIGHT - 1;
             break;
         case 75: // 왼쪽 방향키
             player[0][0] = player[0][0] > 1 ? player[0][0] - 1 : 1;
@@ -409,11 +413,11 @@ void moveMonster() {
             monster_x_perc[i] = 8;
         }
 
-        if (monster[i][1] == 1) {
+        if (monster[i][1] == 2) {
             monster[i][1]++;
             monster_y_perc[i] = 2;
         }
-        if (monster[i][1] == MAP_HEIGHT - 2) {
+        if (monster[i][1] == MAP_HEIGHT - 1) {
             monster[i][1]--;
             monster_y_perc[i] = 8;
         }
@@ -423,8 +427,11 @@ void moveMonster() {
         else
             monster[i][1] += direction_y[i];
 
+        
         gotoxy(monster[i][0], monster[i][1]);
+        SetColor(8);
         printf("◆");
+        SetColor(15);
     }
 }
 
@@ -450,7 +457,7 @@ void initBoard() {
 }
 void initRandomPosition(int position[2]) {
     position[0] = rand() % (MAP_WIDTH - 2) + 1;
-    position[1] = rand() % (MAP_HEIGHT - 2) + 1;
+    position[1] = rand() % (MAP_HEIGHT - 2) + 2;
 }
 void initGameVariables() {
     playertick = 31.25;
@@ -480,6 +487,10 @@ void printThings() {
     for (int i = 0; i < NUM_PENALTY; i++) {
         gotoxy(penalty[i][0], penalty[i][1]);
         printf("▶");
+    }
+    for (int i = 0; i < monsterNum; i++) {
+        gotoxy(monster[i][0], monster[i][1]);
+        printf("◆");
     }
 }
 //몬스터가 맵 지우면 다시 그리기
@@ -549,8 +560,7 @@ void checkTreasure() {
 void checkGift() {
     for (int i = 0; i < 7; i++) {
         if (player[0][0] == gift[i][0] && player[0][1] == gift[i][1]) {
-            gift[i][0] = 0;
-            gift[i][1] = 0; // 접촉한 깃발 제거
+            gift[i][0] = 0, gift[i][1] = 0; // 접촉한 깃발 제거
             if (i < 3) {
                 // 3개의 깃발은 favorableQuestion을 호출
                 favorableQuestion();
@@ -563,6 +573,7 @@ void checkGift() {
             }
             else {
                 // 엿보기 안경 획득
+                initTick();
                 revealTreasureDirection(i);
             }
         }
@@ -591,6 +602,7 @@ void checkObstacle()
             else
                 score = 0;
             player[0][0]--;
+            printPlayer();
         }
 
     }
@@ -773,7 +785,6 @@ void revealTreasureDirection(int i) {
     Sleep(1000);
     eraseSideBox();
 }
-
 //페널티
 void penaltyPrint(int x) {
     drawSideBox();
@@ -811,8 +822,6 @@ int checkGameEnd() {
 //게임 종료 화면
 void endGame(int result) {
     system("cls");
-    int ch;
-    while ((ch = getchar()) != '\n' && ch != EOF);
 
     PlaySound(NULL, NULL, 0);
     int screenWidth, screenHeight;
@@ -854,6 +863,9 @@ void endGame(int result) {
 }
 // 점수 계산
 void calculateScore() {
+    int screenWidth, screenHeight;
+    getConsoleSize(&screenWidth, &screenHeight);
+    
     const int requiredScore[] = { 900, 1200, 1500 }; // 각 레벨에서 요구되는 점수
     const char* heartColors[] = { "벌꿀색 하트", "오렌지 하트", "그린 하트", "핑크 하트", "레드 하트" };
     const int heartColorsCode[] = { 14, 4, 10, 13, 12 };
@@ -864,24 +876,15 @@ void calculateScore() {
         "사랑이 시작할 때 나오는 하트.\n",
         "진실한 사랑의 하트.\n"
     };
+    bool levelUpCondition = score >= requiredScore[level - 1];
+
+    int heartIndex = score / 300 - 1;
+    if (score == 0)
+        heartIndex = 0;
 
     PlaySound(NULL, NULL, 0);
     PlaySound(TEXT("sound\\levelup.wav"), NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
     system("cls");
-
-    int screenWidth, screenHeight;
-    getConsoleSize(&screenWidth, &screenHeight);
-
-    bool levelUpCondition = score >= requiredScore[level - 1];
-    int heartIndex = score / 300 - 1;
-
-    if (heartIndex < 0) { // 0점
-        gotoxy((screenWidth - 10) / 2, screenHeight / 2); // "You failed"를 중앙에 배치
-        printf("You failed\n\n");
-        Sleep(2000);
-        menu();
-        return;
-    }
 
     gotoxy((screenWidth - strlen(heartColors[heartIndex])) / 2, (screenHeight / 2) - 2);
     printf("%s\n", heartColors[heartIndex]);
@@ -894,11 +897,26 @@ void calculateScore() {
     gotoxy((screenWidth - strlen(heartDescriptions[heartIndex])) / 2, (screenHeight / 2) + 2);
     printf("%s", heartDescriptions[heartIndex]);
     Sleep(5000);
+    system("cls");
+    if (!levelUpCondition) {
+        const char* failedMessage[] = {
+                    "__   __                ______         _  _            _ ",
+                    "\\ \\ / /                |  ___|       (_)| |          | |",
+                    " \\ V /   ___   _   _   | |_     __ _  _ | |  ___   __| |",
+                    "  \\ /   / _ \\ | | | |  |  _|   / _` || || | / _ \\ / _` |",
+                    "  | |  | (_) || |_| |  | |    | (_| || || ||  __/| (_| |",
+                    "  \\_/   \\___/  \\__,_|  \\_|     \\__,_||_||_| \\___| \\__,_|",
+                    "                                                        ",
+                    "                                                        "
+        };
+        int numLines = sizeof(failedMessage) / sizeof(failedMessage[0]);
+        int startY = (screenHeight - numLines) / 2;
 
-    if (heartIndex < level || (heartIndex == 2 && !levelUpCondition)) {
-        gotoxy((screenWidth - 10) / 2, screenHeight / 2); // "You failed"를 중앙에 배치
-        printf("You failed");
-        Sleep(2000);
+        for (int i = 0; i < numLines; i++) {
+            gotoxy((screenWidth - strlen(failedMessage[i])) / 2, startY + i);
+            printf("%s", failedMessage[i]);
+        }
+        Sleep(5000);
         menu();
     }
     else {
@@ -908,11 +926,6 @@ void calculateScore() {
 // 난이도별로 조작
 void levelUp() {
     initGameVariables();
-    system("cls");
-
-    // 입력 버퍼 비우기
-    int ch;
-    while ((ch = getchar()) != '\n' && ch != EOF);
 
     int screenWidth, screenHeight;
     getConsoleSize(&screenWidth, &screenHeight);
@@ -947,6 +960,7 @@ void levelUp() {
         gotoxy(xPos2, startY + numLines + 3);
         printf("%s", nextLevelMessage2);
 
+        while (_kbhit()) _getch(); // 키보드 버퍼를 비움
         _getch();
 
         switch (level) {
