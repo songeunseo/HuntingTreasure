@@ -1,5 +1,4 @@
-﻿#pragma once
-#pragma comment(lib, "winmm.lib")
+﻿#pragma comment(lib, "winmm.lib")
 
 #define _CRT_SECURE_NO_WARNINGS
 
@@ -35,9 +34,11 @@
 #define rand_store_chance 5
 
 // 원형함수
-void printArea();
 void getUserName();
+void printArea();
+
 void gameRule();
+
 void menu();
 void printMenu();
 void switchMenu();
@@ -48,27 +49,43 @@ void switchDifficultyMenu();
 void runDifficultyMenu(int level);
 void printSelectionBox(int x, int y);
 void eraseSelectionBox(int x, int y);
+
+int gameStart();
 void movePlayer();
 void moveMonster();
 
+void initializeBoard();
+void initRandomPosition(int position[2]);
+void printThings();
+void checkErasing(int x, int y);
+
+void drawSideBox();
+void eraseSideBox();
+void favorableQuestion();
+
 void recordAndEndOnTime(int x);
-void option();
+
+void checkFlag();
+void checkTreasure();
+void checkGift();
+void checkPenalty();
+void checkObstacle();
+
 void rand_store();
 void penalty_func();
-int checkGameEnd();
-void endGame(int result);
-void initializeBoard();
-void printThings();
-void checkobstacle();
-void checkFlag();
-void calculateScore();
+void penaltyPrint(int x);
+
 void levelUp();
 void startEasyGame();
 void startNormalGame();
 void startHardGame();
-void checkErasing(int x, int y);
-void drawFavorable();
-void eraseFavorable();
+
+int checkGameEnd();
+void endGame(int result);
+void initializeTick();
+void initializeGameVariables();
+//void printAtPosition(int position[2], const char* symbol, int color);
+void calculateScore();
 
 //API
 void slowPrint(unsigned long speed, const char* s);
@@ -83,6 +100,7 @@ double playertick = 31.25;
 double monstertick = 125;
 int level = 1;
 int endsignal;
+int treasureFound = 0;
 char name[10]; // 사용자 이름 입력받기
 bool gameRunning = true;
 time_t start_time;
