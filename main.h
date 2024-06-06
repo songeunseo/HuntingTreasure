@@ -52,6 +52,7 @@ void eraseSelectionBox(int x, int y);
 
 int gameStart();
 void movePlayer();
+void printPlayer();
 void moveMonster();
 
 void initBoard();

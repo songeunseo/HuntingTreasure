@@ -52,19 +52,18 @@ void printArea()
 //게임 설명
 void gameRule() {
     PlaySound(NULL, NULL, 0); // 현재 재생 중인 사운드를 중지
-    PlaySound(TEXT("sound\\gamerule.wav"), NULL, SND_FILENAME | SND_ASYNC);
+    PlaySound(TEXT("sound\\gamerule.wav"), NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
     system("cls");
-    printf("Skip을 하려면 엔터키를 누르시오.\n\n");
-    slowPrint(50, "게임 설명\n");
-    slowPrint(50, "이 게임은 플레이어가 미로 속에서 보물을 찾아나가는 게임입니다.\n");
-    slowPrint(50, "플레이어는 ♥으로 표시되며, 보물은 ★으로 표시됩니다.\n");
-    slowPrint(50, "플레이어는 ↑, ↓, ←, → 키를 사용하여 이동할 수 있습니다.\n");
-    slowPrint(50, "이득 깃발(G)을 획득하면 점수가 100점 증가하고, 벌칙 깃발(P)에 닿으면 점수가 1점 감소합니다.\n");
-    slowPrint(50, "점수가 일정 수준 이상이 되면 게임을 클리어할 수 있습니다.\n");
-    slowPrint(50, "게임은 시간 제한이 있으며, 시간이 다 되면 게임 오버됩니다.\n");
-    slowPrint(50, "게임 시작 전에 메뉴를 통해 게임 시작 또는 게임 설명을 선택할 수 있습니다.\n");
-    slowPrint(50, "게임 중간에도 메뉴를 통해 게임을 나갈 수 있습니다.\n\n");
+    printf("Skip을 하려면 엔터키를 누르세요.\n\n");
+    slowPrint(50, "마계에서 인간 세계로 내려온 마녀인 당신!\n\n");
+    slowPrint(50, "마계의 여왕이 되기 위해서는, 인간들의 하트를 빼앗아야 합니다.\n");
+    slowPrint(50, "인간들에게 호감을 얻고, 하트를 획득해보세요!\n\n");
+    slowPrint(50, "플레이어는 ♥으로 표시되며, 깃발은 ▶으로 표시됩니다.\n");
+    slowPrint(50, "플레이어는 방향키를 이용해 이동할 수 있습니다.\n");
+    slowPrint(50, "제한된 시간 내에 가능한 많은 호감도를 획득하여 높은 하트를 얻으면 여왕이 될 수 있습니다.\n\n");
     slowPrint(50, "게임을 시작하려면 아무 키나 누르세요...");
+    _getch();
+    difficultyMenu();
 }
 
 //메뉴 화면
@@ -167,7 +166,6 @@ void eraseSelectionBox(int x, int y)
     gotoxy(x, y + 2);
     puts("                                 ");
 }
-// 난이도 메뉴
 void difficultyMenu() {
     system("cls");
     printArea();
@@ -189,11 +187,10 @@ void printDifficultyMenu()
 }
 void switchDifficultyMenu() {
     int key;
+    int temp = 1;
 
-    while (1)
-    {
-        if (_kbhit() != 0)
-        {
+    while (1) {
+        if (_kbhit()) {
             key = _getch();
 
             if (key == 13) // 엔터키
@@ -203,39 +200,36 @@ void switchDifficultyMenu() {
             if (key == 224) // 방향키 모두
             {
                 key = _getch();
-                if (key == 72 && level > 1) // 위쪽 방향키
+                if (key == 72 && temp > 1) // 위쪽 방향키
                 {
-                    eraseSelectionBox(SELECTION_BOX_LEFT_ALIGN, MENU_TOP_ALIGN - 1 + ((level - 1) * MENU_LINE_SPACE));
-                    level--;
-                    printSelectionBox(SELECTION_BOX_LEFT_ALIGN, MENU_TOP_ALIGN - 1 + ((level - 1) * MENU_LINE_SPACE));
+                    eraseSelectionBox(SELECTION_BOX_LEFT_ALIGN, MENU_TOP_ALIGN - 1 + ((temp - 1) * MENU_LINE_SPACE));
+                    temp--;
+                    printSelectionBox(SELECTION_BOX_LEFT_ALIGN, MENU_TOP_ALIGN - 1 + ((temp - 1) * MENU_LINE_SPACE));
                 }
-                else if (key == 80 && level < 3) // 아래쪽 방향키
+                else if (key == 80 && temp < 3) // 아래쪽 방향키
                 {
-                    eraseSelectionBox(SELECTION_BOX_LEFT_ALIGN, MENU_TOP_ALIGN - 1 + ((level - 1) * MENU_LINE_SPACE));
-                    level++;
-                    printSelectionBox(SELECTION_BOX_LEFT_ALIGN, MENU_TOP_ALIGN - 1 + ((level - 1) * MENU_LINE_SPACE));
+                    eraseSelectionBox(SELECTION_BOX_LEFT_ALIGN, MENU_TOP_ALIGN - 1 + ((temp - 1) * MENU_LINE_SPACE));
+                    temp++;
+                    printSelectionBox(SELECTION_BOX_LEFT_ALIGN, MENU_TOP_ALIGN - 1 + ((temp - 1) * MENU_LINE_SPACE));
                 }
             }
 
         }
         Sleep(200);
     }
-    runDifficultyMenu(level);
+    runDifficultyMenu(temp);
 }
-void runDifficultyMenu(int level)
+void runDifficultyMenu(int num)
 {
-    switch (level)
+    switch (num)
     {
     case 1:
-        // PlaySound(NULL, 0, 0);
         startEasyGame();
         break;
     case 2:
-        //PlaySound(NULL, 0, 0);
         startNormalGame();
         break;
     case 3:
-        // PlaySound(NULL, 0, 0);
         startHardGame();
         break;
     }
@@ -291,6 +285,8 @@ int gameStart() {
             gotoxy(0, MAP_HEIGHT);
             printf("▤ 점수 : %d\t", score);
             printf("▤ 남은 시간: %d분 %d초", remaining_time / 60, remaining_time % 60);
+            gotoxy(0, MAP_HEIGHT + 1);
+            printf("▤ 현재 레벨: %d", level); // 현재 레벨 출력
             recordAndEndOnTime(remaining_time);
         }
 
@@ -324,11 +320,14 @@ void movePlayer() {
             menu();
             break;
         }
-        SetColor(12);
-        gotoxy(player[0][0], player[0][1]);
-        printf("♥");
-        SetColor(15);
+        printPlayer();
     }
+}
+void printPlayer() {
+    gotoxy(player[0][0], player[0][1]);
+    SetColor(12);
+    printf("♥");
+    SetColor(15);
 }
 //몬스터 이동
 void moveMonster() {
@@ -408,10 +407,7 @@ void initTick() {
 
 //몬스터 제외 맵에 그리기
 void printThings() {
-    gotoxy(player[0][0], player[0][1]);
-    SetColor(12);
-    printf("♥");
-    SetColor(15);
+    printPlayer();
 
     gotoxy(treasure[0][0], treasure[0][1]);
     printf("▶");
@@ -486,6 +482,7 @@ void checkTreasure() {
             printf("★");
             player[0][0]++;
             player[0][1]++;
+            printPlayer();
         }
     }
 }
@@ -766,15 +763,6 @@ void endGame(int result) {
 }
 // 점수 계산
 void calculateScore() {
-    PlaySound(NULL, NULL, 0);
-    PlaySound(TEXT("sound\\levelup.wav"), NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
-    system("cls");
-    printArea();
-    gotoxy(10, 3);
-    printf("당신의 score는 %d점입니다.", score);
-    Sleep(2000);
-    system("cls");
-
     const int requiredScore[] = { 900, 1200, 1500 }; // 각 레벨에서 요구되는 점수
     const char* heartColors[] = { "벌꿀색 하트", "오렌지 하트", "그린 하트", "핑크 하트", "레드 하트" };
     const int heartColorsCode[] = { 14, 4, 10, 13, 12 };
@@ -786,10 +774,14 @@ void calculateScore() {
         "진실한 사랑의 하트."
     };
 
+    PlaySound(NULL, NULL, 0);
+    PlaySound(TEXT("sound\\levelup.wav"), NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
+    system("cls");
+
     bool levelUpCondition = score >= requiredScore[level - 1];
     int heartIndex = score / 300 - 1;
 
-    if (heartIndex < 0) {
+    if (heartIndex < 0) { // 0점
         printf("You failed\n\n");
         Sleep(2000);
         menu();
@@ -801,7 +793,7 @@ void calculateScore() {
     printf("%s", heart);
     SetColor(15);
     printf("%s", heartDescriptions[heartIndex]);
-    Sleep(2000);
+    Sleep(5000);
 
     if (heartIndex < level || (heartIndex == 2 && !levelUpCondition)) {
         printf("You failed");
@@ -817,6 +809,10 @@ void calculateScore() {
 void levelUp() {
     initGameVariables();
     system("cls");
+
+    // 입력 버퍼 비우기
+    int ch;
+    while ((ch = getchar()) != '\n' && ch != EOF);
 
     if (level != 3) {
         printf(" _                         _   _   _         _ \n");
@@ -862,14 +858,17 @@ void levelUp() {
     }
 }
 void startEasyGame() {
+    level = 1;
     monsterNum = EASY_MONSTER;
     gameStart();
 }
 void startNormalGame() {
+    level = 2;
     monsterNum = NORMAL_MONSTER;
     gameStart();
 }
 void startHardGame() {
+    level = 3;
     monsterNum = HARD_MONSTER;
     gameStart();
 }
