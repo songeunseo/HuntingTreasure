@@ -68,17 +68,11 @@ int gameStart() {
     }
 
     gotoxy(player[0][0], player[0][1]);
-<<<<<<< HEAD
-    printf("��");
+    printf("♥");
     clock_t player_std_time, monster_std_time, player_time, monster_time;
     double player_duration, monster_duration;
     player_std_time = clock();
     monster_std_time = clock();
-=======
-    SetColor(12);
-    printf("♥");
-
->>>>>>> origin/master
     while (1) {
         player_time = clock();
         monster_time = clock();
@@ -92,29 +86,19 @@ int gameStart() {
 
 
 
-<<<<<<< HEAD
-        time_t current_time = time(NULL); // ���� �ð� ��������
-        if (player_duration >= playertick) { // playertick���� �̵�
+        time_t current_time = time(NULL); // 현재 시간 가져오기
+        if (player_duration >= playertick) { // playertick마다 이동
             movePlayer();
             player_std_time = clock();
         }
 
-        if (monster_duration >= monstertick) { // monstertick����
+        if (monster_duration >= monstertick) { // monstertick마다
             moveMonster();
             monster_std_time = clock();
         }
-        if (current_time - start_time >= 1) {//1�ʸ��� �����ð� ���,��� �÷��̾� ���� 
-            int elapsed_time = current_time - start_time; // ����� �ð� ���
-            int remaining_time = gametime - elapsed_time; // ���� �ð� ���
-=======
-        time_t current_time = time(NULL); // 현재 시간 가져오기
-
-        if (current_time - last_update_time >= 1) { // 1초마다
-            moveMonster();
+        if (current_time - start_time >= 1) {//1초마다 남은시간 계산,출력 플레이어 스턴 
             int elapsed_time = current_time - start_time; // 경과된 시간 계산
             int remaining_time = gametime - elapsed_time; // 남은 시간 계산
-
->>>>>>> origin/master
             gotoxy(0, MAP_HEIGHT);
             printf("▤ 점수 : %d\t", score);
             printf("▤ 남은 시간: %d분 %d초", remaining_time / 60, remaining_time % 60);
@@ -131,19 +115,6 @@ void gameRule() {
     PlaySound(NULL, NULL, 0); // 현재 재생 중인 사운드를 중지
     PlaySound(TEXT("sound\\gamerule.wav"), NULL, SND_FILENAME | SND_ASYNC);
     system("cls");
-<<<<<<< HEAD
-    printf("Skip�� �Ϸ��� ����Ű�� �����ÿ�.\n\n");
-    slowPrint(50, "���� ����\n");
-    slowPrint(50, "�� ������ �÷��̾ �̷� �ӿ��� ������ ã�Ƴ����� �����Դϴ�.\n");
-    slowPrint(50, "�÷��̾�� ������ ǥ�õǸ�, ������ ������ ǥ�õ˴ϴ�.\n");
-    slowPrint(50, "�÷��̾�� ��, ��, ��, �� Ű�� ����Ͽ� �̵��� �� �ֽ��ϴ�.\n");
-    slowPrint(50, "�̵� ���(G)�� ȹ���ϸ� ������ 100�� �����ϰ�, ��Ģ ���(P)�� ������ ������ 1�� �����մϴ�.\n");
-    slowPrint(50, "������ ���� ���� �̻��� �Ǹ� ������ Ŭ������ �� �ֽ��ϴ�.\n");
-    slowPrint(50, "������ �ð� ������ ������, �ð��� �� �Ǹ� ���� �����˴ϴ�.\n");
-    slowPrint(50, "���� ���� ���� �޴��� ���� ���� ���� �Ǵ� ���� ������ ������ �� �ֽ��ϴ�.\n");
-    slowPrint(50, "���� �߰����� �޴��� ���� ������ ���� �� �ֽ��ϴ�.\n\n");
-    slowPrint(50, "������ �����Ϸ��� �ƹ� Ű�� ��������...");
-=======
     printf("Skip을 하려면 엔터키를 누르시오.\n\n");
     slowPrint(50, "게임 설명\n");
     slowPrint(50, "이 게임은 플레이어가 미로 속에서 보물을 찾아나가는 게임입니다.\n");
@@ -155,7 +126,6 @@ void gameRule() {
     slowPrint(50, "게임 시작 전에 메뉴를 통해 게임 시작 또는 게임 설명을 선택할 수 있습니다.\n");
     slowPrint(50, "게임 중간에도 메뉴를 통해 게임을 나갈 수 있습니다.\n\n");
     slowPrint(50, "게임을 시작하려면 아무 키나 누르세요...");
->>>>>>> origin/master
 }
 //은서 메뉴 화면
 void menu() {
@@ -353,42 +323,22 @@ void movePlayer() {
         case 72: // 위쪽 방향키
             player[0][1] = player[0][1] > 1 ? player[0][1] - 1 : 1;
             gotoxy(player[0][0], player[0][1]);
-<<<<<<< HEAD
-            printf("��");
-=======
-            SetColor(12);
             printf("♥");
->>>>>>> origin/master
             break;
         case 80: // 아래쪽 방향키
             player[0][1] = player[0][1] < MAP_HEIGHT - 2 ? player[0][1] + 1 : MAP_HEIGHT - 2;
             gotoxy(player[0][0], player[0][1]);
-<<<<<<< HEAD
-            printf("��");
-=======
-            SetColor(12);
             printf("♥");
->>>>>>> origin/master
             break;
         case 75: // 왼쪽 방향키
             player[0][0] = player[0][0] > 1 ? player[0][0] - 1 : 1;
             gotoxy(player[0][0], player[0][1]);
-<<<<<<< HEAD
-            printf("��");
-=======
-            SetColor(12);
             printf("♥");
->>>>>>> origin/master
             break;
         case 77: // 오른쪽 방향키
             player[0][0] = player[0][0] < MAP_WIDTH - 2 ? player[0][0] + 1 : MAP_WIDTH - 2;
             gotoxy(player[0][0], player[0][1]);
-<<<<<<< HEAD
-            printf("��");
-=======
-            SetColor(12);
             printf("♥");
->>>>>>> origin/master
             break;
         case 27:
             menu();
@@ -476,12 +426,7 @@ void initializeBoard() {
 //몬스터 제외 맵에 그리기
 void printThings() {
     gotoxy(player[0][0], player[0][1]);
-<<<<<<< HEAD
-    printf("��");
-=======
-    SetColor(12);
     printf("♥");
->>>>>>> origin/master
 
     gotoxy(treasure[0][0], treasure[0][1]);
     printf("★");
@@ -502,12 +447,7 @@ void printThings() {
 void checkErasing(int x, int y) {
     if (x == treasure[0][0] && y == treasure[0][1]) {
         gotoxy(treasure[0][0], treasure[0][1]);
-<<<<<<< HEAD
-        printf("��");
-=======
-        SetColor(15);
         printf("★");
->>>>>>> origin/master
     }
     for (int i = 0; i < NUM_GIFTS; i++) {
         if (x == gift[i][0] && y == gift[i][1])
@@ -744,41 +684,16 @@ void checkFlag()
         if (player[0][0] == penalty[i][0] && player[0][1] == penalty[i][1])
         {
             //PlaySound(TEXT("sound\\jump02.wav"), NULL, SND_FILENAME | SND_ASYNC);
-<<<<<<< HEAD
-            penalty[i][0] = 0, penalty[i][1] = 0;// ������ ��� ����
+            penalty[i][0] = 0, penalty[i][1] = 0;// 접촉한 깃발 제거
             if (score >= 100)
                 score -= 100;
             else
                 score = 0;
-=======
-            penalty[i][0] = 0, penalty[i][1] = 0;// 접촉한 깃발 제거
-            score -= 100;
->>>>>>> origin/master
             penalty_func();
         }
     }
 
 
-<<<<<<< HEAD
-=======
-    // 몬스터와 접촉시 다시 출력
-    for (int i = 0; i < monsterNum; i++)
-    {
-        if (monster[i][0] == treasure[0][0] && monster[i][1] == treasure[0][1]) {
-            gotoxy(treasure[0][0], treasure[0][1]);
-            SetColor(15);
-            printf("★");
-        }
-        for (int j = 0; j < NUM_GIFTS; j++) {
-            if (monster[i][0] == gift[j][0] && monster[i][1] == gift[j][1])
-            {
-                gotoxy(gift[j][0], gift[j][1]);
-                printf("G");
-            }
-        }
-
-    }
->>>>>>> origin/master
 }
 
 //지혁
@@ -790,16 +705,11 @@ void checkobstacle()
         if (player[0][0] == monster[i][0] && player[0][1] == monster[i][1])
         {
             //PlaySound(TEXT("sound\\jump02.wav"), NULL, SND_FILENAME | SND_ASYNC);
-<<<<<<< HEAD
             if (score >= 100)
-                score -= 100; //��������
+                score -= 100; //점수감소
             else
                 score = 0;
             player[0][0]--;
-=======
-            score -= 100; //점수감소
-            Sleep(2000); // 2초 정지
->>>>>>> origin/master
         }
 
     }
@@ -922,12 +832,6 @@ void calculateScore() {
         score = 0;
         menu();
     }
-<<<<<<< HEAD
-    else if (500 <= score && score < 1000) {
-        printf("�׸� ��Ʈ\n");
-        printf("ģ���� ������ ������ ��Ʈ.\n\n");
-        levelUp();
-=======
     else if (900 <= score && score < 1200) {
         printf("그린 하트\n");
         SetColor(10);
@@ -940,7 +844,6 @@ void calculateScore() {
         endsignal = 0;
         score = 0;
         menu();
->>>>>>> origin/master
     }
     else if (1200 <= score && score < 1500) {
         printf("핑크 하트\n");
