@@ -9,7 +9,7 @@ int main(void) {
     return 0;
 }
 
-//은서 사용자 이름 받기
+//사용자 이름 받기
 void getUserName() {
     system("cls");
     printArea();
@@ -24,7 +24,6 @@ void getUserName() {
     printf("%s님 안녕하세요!", &name);
     Sleep(1000);
 }
-
 void printArea()
 {
     system("cls");
@@ -50,7 +49,6 @@ void printArea()
     printf("┘");
 
 }
-
 int gameStart() {
     system("cls");
     PlaySound(NULL, NULL, 0);
@@ -109,7 +107,7 @@ int gameStart() {
     return 0;
 }
 
-//은서 게임 설명
+//게임 설명
 void gameRule() {
     PlaySound(NULL, NULL, 0); // 현재 재생 중인 사운드를 중지
     PlaySound(TEXT("sound\\gamerule.wav"), NULL, SND_FILENAME | SND_ASYNC);
@@ -126,7 +124,7 @@ void gameRule() {
     slowPrint(50, "게임 중간에도 메뉴를 통해 게임을 나갈 수 있습니다.\n\n");
     slowPrint(50, "게임을 시작하려면 아무 키나 누르세요...");
 }
-//은서 메뉴 화면
+//메뉴 화면
 void menu() {
     system("cls");
     PlaySound(TEXT("sound\\gamestart.wav"), NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
@@ -135,7 +133,6 @@ void menu() {
     printSelectionBox(MENU_LEFT_ALIGN - 3, MENU_TOP_ALIGN - 1); // 메뉴박스 출력
     switchMenu(); // 메뉴 입력받기
 }
-//은서
 void printMenu()
 {
     gotoxy(10, 3);
@@ -152,7 +149,6 @@ void printMenu()
     gotoxy(MENU_LEFT_ALIGN, MENU_TOP_ALIGN + MENU_LINE_SPACE * 2);
     printf("EXIT");
 }
-//은서
 void switchMenu() {
     int menuNum = 1; //1:게임시작, 2:게임설명, 3:EXIT
     int key;
@@ -189,7 +185,6 @@ void switchMenu() {
     }
     runMenu(menuNum);
 }
-//은서
 void runMenu(int menuNum)
 {
     switch (menuNum)
@@ -207,7 +202,7 @@ void runMenu(int menuNum)
     }
 }
 
-//은서 메뉴박스 출력
+//메뉴박스 출력
 void printSelectionBox(int x, int y)
 {
     gotoxy(x, y);
@@ -219,7 +214,7 @@ void printSelectionBox(int x, int y)
     gotoxy(x, y + 2);
     puts("└───────────────────────────────┘");
 }
-//은서 메뉴박스 지우기
+//메뉴박스 지우기
 void eraseSelectionBox(int x, int y)
 {
     gotoxy(x, y);
@@ -232,7 +227,6 @@ void eraseSelectionBox(int x, int y)
     puts("                                 ");
 }
 
-//은서
 // 난이도 선택 메뉴
 void difficultyMenu() {
     system("cls");
@@ -241,7 +235,6 @@ void difficultyMenu() {
     printSelectionBox(MENU_LEFT_ALIGN - 3, MENU_TOP_ALIGN - 1);
     switchDifficultyMenu();
 }
-//은서
 void printDifficultyMenu()
 {
     gotoxy(13, 5);
@@ -254,7 +247,6 @@ void printDifficultyMenu()
     gotoxy(MENU_LEFT_ALIGN, MENU_TOP_ALIGN + MENU_LINE_SPACE * 2);
     printf("고급 Hard Mode");
 }
-//은서
 void switchDifficultyMenu() {
     int key;
 
@@ -290,7 +282,6 @@ void switchDifficultyMenu() {
     }
     runDifficultyMenu(level);
 }
-//은서
 void runDifficultyMenu(int level)
 {
     switch (level)
@@ -310,7 +301,7 @@ void runDifficultyMenu(int level)
     }
 }
 
-//은서 사용자 이동
+//사용자 이동
 void movePlayer() {
     if (_kbhit()) {
         char move = _getch(); // 방향키 입력받기
@@ -346,7 +337,6 @@ void movePlayer() {
     }
 }
 
-//지아
 //몬스터 이동
 void moveMonster() {
     for (int i = 0; i < monsterNum; i++) {
@@ -387,8 +377,7 @@ void moveMonster() {
     }
 }
 
-//지아
-// //맵 초기화
+//맵 초기화
 void initializeBoard() {
     player[0][0] = rand() % (MAP_WIDTH - 2) + 1;
     player[0][1] = rand() % (MAP_HEIGHT - 2) + 1;
@@ -419,8 +408,6 @@ void initializeBoard() {
         }
     }
 }
-
-//지아
 //몬스터 제외 맵에 그리기
 void printThings() {
     gotoxy(player[0][0], player[0][1]);
@@ -441,8 +428,6 @@ void printThings() {
         printf("▶");
     }
 }
-
-//지아
 //몬스터가 맵 지우면 다시 그리기
 void checkErasing(int x, int y) {
     if (x == treasure[0][0] && y == treasure[0][1]) {
@@ -465,7 +450,6 @@ void checkErasing(int x, int y) {
     }
 }
 
-//지아
 //호감도 선택지 박스 그리기
 void drawFavorable() {
     gotoxy(MAP_WIDTH + 3, 3);
@@ -479,8 +463,6 @@ void drawFavorable() {
     gotoxy(MAP_WIDTH + 3, 19);
     puts("└────────────────────────────────────────────────────┘");
 }
-
-//지아
 //호감도 선택지 박스 지우기
 void eraseFavorable() {
     for (int i = 0; i <= 16; i++) {
@@ -488,8 +470,6 @@ void eraseFavorable() {
         puts("                                                         ");
     }
 }
-
-//지아
 //질문&선택지 출력 함수
 void favorableQuestion() {
     char* question[] = {
@@ -587,8 +567,7 @@ void favorableQuestion() {
         questionNum = 0;
 }
 
-//지혁
-// 남은 게임시간 감소 
+//남은 게임시간 감소 
 void recordAndEndOnTime(int x)
 {
     if (x <= 0) {
@@ -596,7 +575,6 @@ void recordAndEndOnTime(int x)
     }
 }
 
-//지혁
 //깃발 접촉
 void checkFlag()
 {
@@ -710,8 +688,6 @@ void checkFlag()
 
     }
 }
-
-//지혁
 //장애물 접촉
 void checkobstacle()
 {
@@ -730,7 +706,6 @@ void checkobstacle()
     }
 }
 
-//지혁
 //일정확률로 나오는 상점
 void rand_store()
 {
@@ -755,8 +730,6 @@ void rand_store()
         break;
     }
 }
-
-//지혁
 //벌칙 깃발과 접촉시 생기는 패널티
 void penalty_func()
 {
@@ -775,7 +748,6 @@ void penalty_func()
     }
 }
 
-//민재
 //게임 종료 조건 검사, 게임 종료 확인
 int checkGameEnd() {
     // 보물을 찾았는지 확인
@@ -791,7 +763,6 @@ int checkGameEnd() {
     else
         return 0;
 }
-
 //게임 종료 화면
 void endGame(int result) {
     if (result) {
@@ -805,7 +776,6 @@ void endGame(int result) {
         printf("시간이 종료되었습니다.");
     }
 }
-
 // 점수 계산
 void calculateScore() {
     system("cls");
