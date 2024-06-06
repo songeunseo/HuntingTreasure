@@ -69,7 +69,7 @@ int gameStart() {
 
     gotoxy(player[0][0], player[0][1]);
 <<<<<<< HEAD
-    printf("¢¾");
+    printf("ï¿½ï¿½");
     clock_t player_std_time, monster_std_time, player_time, monster_time;
     double player_duration, monster_duration;
     player_std_time = clock();
@@ -93,19 +93,19 @@ int gameStart() {
 
 
 <<<<<<< HEAD
-        time_t current_time = time(NULL); // ÇöÀç ½Ã°£ °¡Á®¿À±â
-        if (player_duration >= playertick) { // playertick¸¶´Ù ÀÌµ¿
+        time_t current_time = time(NULL); // ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+        if (player_duration >= playertick) { // playertickï¿½ï¿½ï¿½ï¿½ ï¿½Ìµï¿½
             movePlayer();
             player_std_time = clock();
         }
 
-        if (monster_duration >= monstertick) { // monstertick¸¶´Ù
+        if (monster_duration >= monstertick) { // monstertickï¿½ï¿½ï¿½ï¿½
             moveMonster();
             monster_std_time = clock();
         }
-        if (current_time - start_time >= 1) {//1ÃÊ¸¶´Ù ³²Àº½Ã°£ °è»ê,Ãâ·Â ÇÃ·¹ÀÌ¾î ½ºÅÏ 
-            int elapsed_time = current_time - start_time; // °æ°úµÈ ½Ã°£ °è»ê
-            int remaining_time = gametime - elapsed_time; // ³²Àº ½Ã°£ °è»ê
+        if (current_time - start_time >= 1) {//1ï¿½Ê¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ã°ï¿½ ï¿½ï¿½ï¿½,ï¿½ï¿½ï¿½ ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ï¿½ï¿½ï¿½ï¿½ 
+            int elapsed_time = current_time - start_time; // ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½ ï¿½ï¿½ï¿½
+            int remaining_time = gametime - elapsed_time; // ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½ ï¿½ï¿½ï¿½
 =======
         time_t current_time = time(NULL); // í˜„ìž¬ ì‹œê°„ ê°€ì ¸ì˜¤ê¸°
 
@@ -132,17 +132,17 @@ void gameRule() {
     PlaySound(TEXT("sound\\gamerule.wav"), NULL, SND_FILENAME | SND_ASYNC);
     system("cls");
 <<<<<<< HEAD
-    printf("SkipÀ» ÇÏ·Á¸é ¿£ÅÍÅ°¸¦ ´©¸£½Ã¿À.\n\n");
-    slowPrint(50, "°ÔÀÓ ¼³¸í\n");
-    slowPrint(50, "ÀÌ °ÔÀÓÀº ÇÃ·¹ÀÌ¾î°¡ ¹Ì·Î ¼Ó¿¡¼­ º¸¹°À» Ã£¾Æ³ª°¡´Â °ÔÀÓÀÔ´Ï´Ù.\n");
-    slowPrint(50, "ÇÃ·¹ÀÌ¾î´Â ¢¾À¸·Î Ç¥½ÃµÇ¸ç, º¸¹°Àº ¡ÚÀ¸·Î Ç¥½ÃµË´Ï´Ù.\n");
-    slowPrint(50, "ÇÃ·¹ÀÌ¾î´Â ¡è, ¡é, ¡ç, ¡æ Å°¸¦ »ç¿ëÇÏ¿© ÀÌµ¿ÇÒ ¼ö ÀÖ½À´Ï´Ù.\n");
-    slowPrint(50, "ÀÌµæ ±ê¹ß(G)À» È¹µæÇÏ¸é Á¡¼ö°¡ 100Á¡ Áõ°¡ÇÏ°í, ¹úÄ¢ ±ê¹ß(P)¿¡ ´êÀ¸¸é Á¡¼ö°¡ 1Á¡ °¨¼ÒÇÕ´Ï´Ù.\n");
-    slowPrint(50, "Á¡¼ö°¡ ÀÏÁ¤ ¼öÁØ ÀÌ»óÀÌ µÇ¸é °ÔÀÓÀ» Å¬¸®¾îÇÒ ¼ö ÀÖ½À´Ï´Ù.\n");
-    slowPrint(50, "°ÔÀÓÀº ½Ã°£ Á¦ÇÑÀÌ ÀÖÀ¸¸ç, ½Ã°£ÀÌ ´Ù µÇ¸é °ÔÀÓ ¿À¹öµË´Ï´Ù.\n");
-    slowPrint(50, "°ÔÀÓ ½ÃÀÛ Àü¿¡ ¸Þ´º¸¦ ÅëÇØ °ÔÀÓ ½ÃÀÛ ¶Ç´Â °ÔÀÓ ¼³¸íÀ» ¼±ÅÃÇÒ ¼ö ÀÖ½À´Ï´Ù.\n");
-    slowPrint(50, "°ÔÀÓ Áß°£¿¡µµ ¸Þ´º¸¦ ÅëÇØ °ÔÀÓÀ» ³ª°¥ ¼ö ÀÖ½À´Ï´Ù.\n\n");
-    slowPrint(50, "°ÔÀÓÀ» ½ÃÀÛÇÏ·Á¸é ¾Æ¹« Å°³ª ´©¸£¼¼¿ä...");
+    printf("Skipï¿½ï¿½ ï¿½Ï·ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Å°ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ã¿ï¿½.\n\n");
+    slowPrint(50, "ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½\n");
+    slowPrint(50, "ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ã·ï¿½ï¿½Ì¾î°¡ ï¿½Ì·ï¿½ ï¿½Ó¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ã£ï¿½Æ³ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ô´Ï´ï¿½.\n");
+    slowPrint(50, "ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ç¥ï¿½ÃµÇ¸ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ç¥ï¿½ÃµË´Ï´ï¿½.\n");
+    slowPrint(50, "ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ï¿½ ï¿½ï¿½, ï¿½ï¿½, ï¿½ï¿½, ï¿½ï¿½ Å°ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½Ìµï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ö½ï¿½ï¿½Ï´ï¿½.\n");
+    slowPrint(50, "ï¿½Ìµï¿½ ï¿½ï¿½ï¿½(G)ï¿½ï¿½ È¹ï¿½ï¿½ï¿½Ï¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 100ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï°ï¿½, ï¿½ï¿½Ä¢ ï¿½ï¿½ï¿½(P)ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 1ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Õ´Ï´ï¿½.\n");
+    slowPrint(50, "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ì»ï¿½ï¿½ï¿½ ï¿½Ç¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Å¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ö½ï¿½ï¿½Ï´ï¿½.\n");
+    slowPrint(50, "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, ï¿½Ã°ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ç¸ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ë´Ï´ï¿½.\n");
+    slowPrint(50, "ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Þ´ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ç´ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ö½ï¿½ï¿½Ï´ï¿½.\n");
+    slowPrint(50, "ï¿½ï¿½ï¿½ï¿½ ï¿½ß°ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Þ´ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ö½ï¿½ï¿½Ï´ï¿½.\n\n");
+    slowPrint(50, "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï·ï¿½ï¿½ï¿½ ï¿½Æ¹ï¿½ Å°ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½...");
 =======
     printf("Skipì„ í•˜ë ¤ë©´ ì—”í„°í‚¤ë¥¼ ëˆ„ë¥´ì‹œì˜¤.\n\n");
     slowPrint(50, "ê²Œìž„ ì„¤ëª…\n");
@@ -354,7 +354,7 @@ void movePlayer() {
             player[0][1] = player[0][1] > 1 ? player[0][1] - 1 : 1;
             gotoxy(player[0][0], player[0][1]);
 <<<<<<< HEAD
-            printf("¢¾");
+            printf("ï¿½ï¿½");
 =======
             SetColor(12);
             printf("â™¥");
@@ -364,7 +364,7 @@ void movePlayer() {
             player[0][1] = player[0][1] < MAP_HEIGHT - 2 ? player[0][1] + 1 : MAP_HEIGHT - 2;
             gotoxy(player[0][0], player[0][1]);
 <<<<<<< HEAD
-            printf("¢¾");
+            printf("ï¿½ï¿½");
 =======
             SetColor(12);
             printf("â™¥");
@@ -374,7 +374,7 @@ void movePlayer() {
             player[0][0] = player[0][0] > 1 ? player[0][0] - 1 : 1;
             gotoxy(player[0][0], player[0][1]);
 <<<<<<< HEAD
-            printf("¢¾");
+            printf("ï¿½ï¿½");
 =======
             SetColor(12);
             printf("â™¥");
@@ -384,7 +384,7 @@ void movePlayer() {
             player[0][0] = player[0][0] < MAP_WIDTH - 2 ? player[0][0] + 1 : MAP_WIDTH - 2;
             gotoxy(player[0][0], player[0][1]);
 <<<<<<< HEAD
-            printf("¢¾");
+            printf("ï¿½ï¿½");
 =======
             SetColor(12);
             printf("â™¥");
@@ -477,7 +477,7 @@ void initializeBoard() {
 void printThings() {
     gotoxy(player[0][0], player[0][1]);
 <<<<<<< HEAD
-    printf("¢¾");
+    printf("ï¿½ï¿½");
 =======
     SetColor(12);
     printf("â™¥");
@@ -503,7 +503,7 @@ void checkErasing(int x, int y) {
     if (x == treasure[0][0] && y == treasure[0][1]) {
         gotoxy(treasure[0][0], treasure[0][1]);
 <<<<<<< HEAD
-        printf("¡Ú");
+        printf("ï¿½ï¿½");
 =======
         SetColor(15);
         printf("â˜…");
@@ -745,7 +745,7 @@ void checkFlag()
         {
             //PlaySound(TEXT("sound\\jump02.wav"), NULL, SND_FILENAME | SND_ASYNC);
 <<<<<<< HEAD
-            penalty[i][0] = 0, penalty[i][1] = 0;// Á¢ÃËÇÑ ±ê¹ß Á¦°Å
+            penalty[i][0] = 0, penalty[i][1] = 0;// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
             if (score >= 100)
                 score -= 100;
             else
@@ -792,7 +792,7 @@ void checkobstacle()
             //PlaySound(TEXT("sound\\jump02.wav"), NULL, SND_FILENAME | SND_ASYNC);
 <<<<<<< HEAD
             if (score >= 100)
-                score -= 100; //Á¡¼ö°¨¼Ò
+                score -= 100; //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             else
                 score = 0;
             player[0][0]--;
@@ -924,8 +924,8 @@ void calculateScore() {
     }
 <<<<<<< HEAD
     else if (500 <= score && score < 1000) {
-        printf("±×¸° ÇÏÆ®\n");
-        printf("Ä£±¸µé »çÀÌÀÇ ¿ìÁ¤ÀÇ ÇÏÆ®.\n\n");
+        printf("ï¿½×¸ï¿½ ï¿½ï¿½Æ®\n");
+        printf("Ä£ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Æ®.\n\n");
         levelUp();
 =======
     else if (900 <= score && score < 1200) {
