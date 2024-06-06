@@ -79,8 +79,8 @@ void CursorControl(bool flag);
 // 변수
 int gametime = 180;//게임 시간
 int score = 0;
-double playertick;
-double monstertick;
+double playertick = 31.25;
+double monstertick = 125;
 int level = 1;
 int endsignal;
 char name[10]; // 사용자 이름 입력받기
@@ -89,8 +89,8 @@ time_t start_time;
 int monsterNum;
 int direction_x[HARD_MONSTER];
 int direction_y[HARD_MONSTER];
-int monster_x_perc[5] = { 3,4,5,6,7 };
-int monster_y_perc[5] = { 7,6,5,4,3 };
+int monster_x_perc[HARD_MONSTER] = { 0 };
+int monster_y_perc[HARD_MONSTER] = { 0 };
 
 int monsterNum;
 int giftNum;
@@ -101,5 +101,4 @@ int treasure[1][2] = { 0 };
 int gift[NUM_GIFTS][2] = { 0 };
 int penalty[NUM_PENALTY][2] = { 0 };
 int monster[HARD_MONSTER][2] = { 0 };
-
 int questionNum = 0;
