@@ -101,10 +101,6 @@ int treasure[1][2] = { 0 };
 int gift[NUM_GIFTS][2] = { 0 };
 int penalty[NUM_PENALTY][2] = { 0 };
 int monster[HARD_MONSTER][2] = { 0 };
-<<<<<<< HEAD
-int questionNum = 0;
-=======
-
 int questionNum = 0;
 
 char* heart =
@@ -127,4 +123,3 @@ char* heart =
 "            ......            \n"
 "              ...             \n"
 "                              \n";
->>>>>>> origin/master
