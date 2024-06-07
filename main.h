@@ -14,6 +14,13 @@
 #include <process.h>
 #include <wchar.h>
 #include <locale.h>
+#include <malloc.h>
+
+typedef struct {
+    int x;
+    int y;
+} Pointer;
+
 
 //기호상수
 #define MENU_LEFT_ALIGN 15
@@ -33,9 +40,17 @@
 #define PLAYTIME 180
 #define rand_store_chance 5
 
+char map[MAP_HEIGHT][MAP_WIDTH];
+Pointer player;
+Pointer gift[NUM_GIFTS];
+Pointer penalty[NUM_PENALTY];
+Pointer monster[HARD_MONSTER];
+Pointer treasure;
+
 // 원형함수
 void getUserName();
 void printArea();
+void printMap();
 
 void gameRule();
 
@@ -51,16 +66,19 @@ void printSelectionBox(int x, int y);
 void eraseSelectionBox(int x, int y);
 
 int gameStart();
-void movePlayer();
+void printProgressBar(int elapsed, int total);
+void movePlayer(Pointer* pos, int dx, int dy);
+void processInput();
 void printPlayer();
-void moveMonster();
+void moveMonster(Pointer* monster);
+void printMonster();
 
 void initBoard();
-void initRandomPosition(int position[2]);
+void initRandomPosition(Pointer* object);
 void initTick();
 void initGameVariables();
 
-void printThings();
+//void printThings();
 void checkErasing(int x, int y);
 
 void drawSideBox();
@@ -76,6 +94,7 @@ void checkTreasure();
 void checkGift();
 void checkPenalty();
 void checkObstacle();
+int checkCollision(Pointer pos1, Pointer pos2);
 
 //void rand_store();
 void penalty_func();
@@ -99,6 +118,8 @@ void gotoxy(int x, int y);
 void CursorControl(bool flag);
 
 // 변수
+
+
 int gametime = 180;//게임 시간
 int score = 0;
 double playertick = 31.25;
@@ -109,7 +130,7 @@ int treasureFound = 0;
 char name[10]; // 사용자 이름 입력받기
 bool gameRunning = true;
 time_t start_time;
-int monsterNum;
+
 int direction_x[HARD_MONSTER];
 int direction_y[HARD_MONSTER];
 int monster_x_perc[HARD_MONSTER] = { 0 };
@@ -119,30 +140,9 @@ int monsterNum;
 int giftNum;
 int penaltyNum;
 
-int player[1][2] = { 0 };
-int treasure[1][2] = { 0 };
-int gift[NUM_GIFTS][2] = { 0 };
-int penalty[NUM_PENALTY][2] = { 0 };
-int monster[HARD_MONSTER][2] = { 0 };
+//int player[1][2] = { 0 };
+//int treasure[1][2] = { 0 };
+//int gift[NUM_GIFTS][2] = { 0 };
+//int penalty[NUM_PENALTY][2] = { 0 };
+//int monster[HARD_MONSTER][2] = { 0 };
 int questionNum = 0;
-
-char* heart =
-"                              \n"
-"         ....    ....         \n"
-"       .......  .......       \n"
-"      ..................      \n"
-"      ..................      \n"
-"      ..................      \n"
-"      ..................      \n"
-"      ..................      \n"
-"      ..................      \n"
-"      ..................      \n"
-"      ..................      \n"
-"       ................       \n"
-"        ..............        \n"
-"         ............         \n"
-"          ..........          \n"
-"           ........           \n"
-"            ......            \n"
-"              ...             \n"
-"                              \n";
