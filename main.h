@@ -70,7 +70,7 @@ void printProgressBar(int elapsed, int total);
 void movePlayer(Pointer* pos, int dx, int dy);
 void processInput();
 void printPlayer();
-void moveMonster(Pointer* monster);
+void moveMonster(Pointer* monster, int i);
 void printMonster();
 
 void initBoard();
@@ -95,7 +95,7 @@ void checkGift();
 void checkPenalty();
 void checkObstacle();
 int checkCollision(Pointer pos1, Pointer pos2);
-void checkErasing(Pointer monster);
+void checkErasing(int x, int y);
 
 //void rand_store();
 void penalty_func();

@@ -110,14 +110,16 @@ void printMap() {
     }
 }
 void updateMap(int oldX, int oldY, int newX, int newY, char character) {
+    // 이전 위치가 벽이나 깃발이 아닌 경우 지우기
     if (map[oldY][oldX] != WALL && map[oldY][oldX] != TREASURE && map[oldY][oldX] != GIFT && map[oldY][oldX] != PENALTY) {
-        map[oldY][oldX] = SPACE;
+        map[oldY][oldX] = ' '; // SPACE를 나타내는 문자
         gotoxy(oldX, oldY + 1);
         printf(" ");
-        checkErasing(monster[i]);
     }
+
+    // 새로운 위치를 업데이트
     map[newY][newX] = character;
-    printf("\033[%d;%dH", newY + 2, newX + 1);
+    gotoxy(newX, newY + 1); // 커서 이동
     if (character == PLAYER) {
         SetColor(12);
         printf("♥");
@@ -477,12 +479,6 @@ void drawPlayer() {
     printf("♥");
     SetColor(15);
 }
-//void printPlayer() {
-//    gotoxy(player.x, player.y+1);
-//    SetColor(12);
-//    printf("♥");
-//    SetColor(15);
-//}
 
 //몬스터 이동
 void moveMonster(Pointer* monster, int i) {
@@ -512,7 +508,7 @@ void moveMonster(Pointer* monster, int i) {
     else
         newY += direction_y[i];
 
-    if (map[newY][newX] != WALL)
+    if (map[newY][newX] != WALL && map[newY][newX] != TREASURE && map[newY][newX] != GIFT && map[newY][newX] != PENALTY)
     {
         monster->x = newX;
         monster->y = newY;
@@ -523,12 +519,10 @@ void printMonster() {
         int oldX = monster[i].x;
         int oldY = monster[i].y;
 
-        checkErasing(monster[i]);
         moveMonster(&monster[i], i);
 
         // 몬스터가 이동한 경우에만 화면 업데이트
         if (oldX != monster[i].x || oldY != monster[i].y) {
-            checkErasing(monster[i]);
             updateMap(oldX, oldY, monster[i].x, monster[i].y, MONSTER);
         }
     }
@@ -679,9 +673,10 @@ void checkObstacle()
 int checkCollision(Pointer pos1, Pointer pos2) {
     return (pos1.x == pos2.x && pos1.y == pos2.y);
 }
-void checkErasing(Pointer monster) {
-    if (checkCollision(monster, treasure)) {
-        gotoxy(treasure.x, treasure.y+1);
+void checkErasing(int x, int y) {
+    // 보물이 있는 경우
+    if (x == treasure.x && y == treasure.y) {
+        gotoxy(treasure.x, treasure.y + 1);
         if (treasureFound == 1) {
             printf("★");
         }
@@ -689,17 +684,19 @@ void checkErasing(Pointer monster) {
             printf("▶");
         }
     }
+
+    // 선물이 있는 경우
     for (int i = 0; i < NUM_GIFTS; i++) {
-        if (checkCollision(monster, gift[i]))
-        {
-            gotoxy(gift[i].x, gift[i].y+1);
+        if (x == gift[i].x && y == gift[i].y) {
+            gotoxy(gift[i].x, gift[i].y + 1);
             printf("▶");
         }
     }
+
+    // 패널티가 있는 경우
     for (int i = 0; i < NUM_PENALTY; i++) {
-        if (checkCollision(monster, penalty[i]))
-        {
-            gotoxy(penalty[i].x, penalty[i].y+1);
+        if (x == penalty[i].x && y == penalty[i].y) {
+            gotoxy(penalty[i].x, penalty[i].y + 1);
             printf("▶");
         }
     }
