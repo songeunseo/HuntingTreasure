@@ -20,6 +20,7 @@ void getConsoleSize(int* width, int* height) {
     *height = rows;
 }
 int main(void) {
+    //SetConsoleOutputCP(CP_UTF8);
     CursorControl(false);
     srand(time(NULL));
     initBoard();
@@ -31,6 +32,7 @@ int main(void) {
 }
 
 void getUserName() {
+    printf("전체 화면으로 확대바랍니다!");
     printArea();
     gotoxy(10, 6);
     printf("당신의 이름은 무엇인가요? ");
@@ -147,7 +149,9 @@ void gameRule() {
         " ",
         "플레이어는 ♥으로 표시되며, 깃발은 ▶으로 표시됩니다.",
         "플레이어는 방향키를 이용해 이동할 수 있습니다.",
-        "제한된 시간 내에 가능한 많은 호감도를 획득하여 높은 하트를 얻으면 여왕이 될 수 있습니다.",
+        " ",
+        "1단계에서는 '그린 하트'(900점), 2단계에서는 '핑크 하트'(1200점) 이상을 얻어야 다음 단계로 넘어갈 수 있습니다.",
+        "3단계에서 '레드 하트'(1500점)을 얻으면 여왕이 될 수 있습니다."
         "게임을 시작하려면 아무 키나 누르세요..."
     };
 
@@ -364,7 +368,7 @@ int gameStart() {
 
     initBoard();
     printMap();
-    //printThings();
+    
 
     time_t start_time = time(NULL);
     clock_t player_std_time, monster_std_time, player_time, monster_time;
@@ -420,7 +424,7 @@ void printProgressBar(int elapsed, int total) {
     printf("%02d:%02d ", elapsed / 60, elapsed % 60);  // 경과 시간 출력
     for (int i = 0; i < BAR_LENGTH; i++) {
         if (i == position) {
-            printf("|");
+            printf("#");
         }
         else if (i < position) {
             printf("=");
@@ -522,38 +526,41 @@ void initBoard() {
                 map[i][j] = WALL;
             }
             else {
-                map[i][j] = SPACE;
+                map[i][j] = SPACE; // 기본적으로 빈 공간으로 초기화
+                // 객체 배치
+                if (player.y == i && player.x == j) {
+                    map[i][j] = PLAYER;
+                }
+                else if (treasure.y == i && treasure.x == j) {
+                    map[i][j] = TREASURE;
+                }
+                else {
+                    for (int k = 0; k < NUM_GIFTS; k++) {
+                        if (gift[k].y == i && gift[k].x == j) {
+                            map[i][j] = GIFT;
+                            break;
+                        }
+                    }
+                    for (int k = 0; k < NUM_PENALTY; k++) {
+                        if (penalty[k].y == i && penalty[k].x == j) {
+                            map[i][j] = PENALTY;
+                            break;
+                        }
+                    }
+                    for (int k = 0; k < monsterNum; k++) {
+                        if (monster[k].y == i && monster[k].x == j) {
+                            map[i][j] = MONSTER;
+                            break;
+                        }
+                    }
+                }
             }
         }
     }
-
-    initRandomPosition(&player);
-    map[player.y][player.x] = PLAYER;
-    initRandomPosition(&treasure);
-    map[treasure.y][treasure.x] = TREASURE;
-
-    for (int i = 0; i < NUM_GIFTS; i++) {
-        initRandomPosition(&gift[i]);
-        map[gift[i].y][gift[i].x] = GIFT;
-    }
-
-    for (int i = 0; i < NUM_PENALTY; i++) {
-        initRandomPosition(&penalty[i]);
-        map[penalty[i].y][penalty[i].x] = PENALTY;
-    }
-
-    for (int i = 0; i < monsterNum; i++) {
-        initRandomPosition(&monster[i]);
-        map[monster[i].y][monster[i].x] = MONSTER;
-        //direction_x[i] = (rand() % 2) ? 1 : -1;
-        //direction_y[i] = (rand() % 2) ? 1 : -1;
-    }
 }
 void initRandomPosition(Pointer* object) {
-    do {
-        object->x = rand() % (MAP_WIDTH - 2) + 1;
-        object->y = rand() % (MAP_HEIGHT - 2) + 1;
-    } while (map[object->y][object->x] != SPACE);
+    object->x = rand() % (MAP_WIDTH - 2) + 1;
+    object->y = rand() % (MAP_HEIGHT - 2) + 1;
 }
 void initGameVariables() {
     playertick = 31.25;
@@ -613,12 +620,10 @@ void checkGift() {
             else if (i < 5) {
                 // 2개의 깃발은 점수 증가 & 페널티 무효화 이벤트
                 score += 300;
-                initTick();
                 eventPrint();
             }
             else {
                 // 엿보기 안경 획득
-                initTick();
                 revealTreasureDirection(i);
             }
             rand_store();
@@ -997,7 +1002,7 @@ void calculateScore() {
 
     gotoxy((screenWidth - 1) / 2, screenHeight / 2); // 하트 심볼을 중앙에 배치
     SetColor(heartColorsCode[heartIndex]);
-    printf("%s", "♥"); // 심볼 자체를 출력
+    printf("%s", "♥");
     SetColor(15);
 
     gotoxy((screenWidth - strlen(heartDescriptions[heartIndex])) / 2, (screenHeight / 2) + 2);
