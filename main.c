@@ -112,7 +112,8 @@ void printMap() {
 void updateMap(int oldX, int oldY, int newX, int newY, char character) {
     if (map[oldY][oldX] != WALL && map[oldY][oldX] != TREASURE && map[oldY][oldX] != GIFT && map[oldY][oldX] != PENALTY) {
         map[oldY][oldX] = SPACE;
-        printf("\033[%d;%dH ", oldY + 2, oldX + 1);
+        gotoxy(oldX, oldY + 1);
+        printf(" ");
     }
     map[newY][newX] = character;
     printf("\033[%d;%dH", newY + 2, newX + 1);
@@ -379,7 +380,7 @@ int gameStart() {
 
         checkFlag();
 
-        time_t current_time = time(NULL); // ���� �ð� ��������
+        time_t current_time = time(NULL); // 현재 시간 받기
 
         if (player_duration >= playertick) { // playertick마다
             printPlayer();
@@ -398,9 +399,11 @@ int gameStart() {
             printProgressBar(elapsed_time, gametime);
             gotoxy(0, MAP_HEIGHT + 1);
             printf("▤ 점수 : %03d\t", score);
-            /*printf("▤ 남은 시간: %d분 %d초", remaining_time / 60, remaining_time % 60);*/
             printf("▤ 현재 레벨: %d", level); // 현재 레벨 출력
-            recordAndEndOnTime(remaining_time);
+
+            if (remaining_time <= 0) {
+                endsignal = -1;
+            }
         }
         if (checkGameEnd())
             break;
@@ -481,22 +484,35 @@ void drawPlayer() {
 //}
 
 //몬스터 이동
-void moveMonster(Pointer* monster) {
-    int direction = rand() % 4;
-    int dx = 0, dy = 0;
+void moveMonster(Pointer* monster, int i) {
+    direction_x[i] = ((rand() % 10) + 1) > monster_x_perc[i] ? 1 : -1;
+    direction_y[i] = ((rand() % 10) + 1) > monster_x_perc[i] ? 1 : -1;
 
-    switch (direction) {
-    case 0: dy = -1; break; // 위
-    case 1: dy = 1; break;  // 아래
-    case 2: dx = -1; break; // 왼쪽
-    case 3: dx = 1; break;  // 오른쪽
+    if (monster->x == 1) {
+        monster->x++;
+        monster_x_perc[i] = 2;
+    } else if (monster->x == MAP_WIDTH - 2) {
+        monster->x--;
+        monster_x_perc[i] = 8;
     }
 
-    int newX = monster->x + dx;
-    int newY = monster->y + dy;
+    if (monster->y == 1) {
+        monster->y++;
+        monster_y_perc[i] = 2;
+    } else if (monster->y == MAP_HEIGHT - 2) {
+        monster->y--;
+        monster_y_perc[i] = 8;
+    }
 
-    if (map[newY][newX] != WALL && map[newY][newX] != TREASURE && map[newY][newX] != GIFT && map[newY][newX] != PENALTY) {
-        updateMap(monster->x, monster->y, newX, newY, MONSTER);
+    int newX = monster->x, newY = monster->y;
+
+    if (rand() % 2 == 0)
+        newX += direction_x[i];
+    else
+        newY += direction_y[i];
+
+    if (map[newY][newX] != WALL)
+    {
         monster->x = newX;
         monster->y = newY;
     }
@@ -506,14 +522,17 @@ void printMonster() {
         int oldX = monster[i].x;
         int oldY = monster[i].y;
 
-        moveMonster(&monster[i]);
+        checkErasing(monster[i]);
+        moveMonster(&monster[i], i);
 
         // 몬스터가 이동한 경우에만 화면 업데이트
         if (oldX != monster[i].x || oldY != monster[i].y) {
+            checkErasing(monster[i]);
             updateMap(oldX, oldY, monster[i].x, monster[i].y, MONSTER);
         }
     }
 }
+
 //초기화
 void initBoard() {
     for (int i = 0; i < MAP_HEIGHT; i++) {
@@ -567,54 +586,6 @@ void initTick() {
     playertick = 31.25;
     monstertick = 125;
 }
-
-//몬스터 제외 맵에 그리기
-//void printThings() {
-//    //printPlayer();
-//
-//    gotoxy(treasure.x, treasure.y);
-//    printf("▶");
-//
-//    for (int i = 0; i < NUM_GIFTS; i++) {
-//        gotoxy(gift[i].x, gift[i].y);
-//        printf("▶");
-//    }
-//
-//    for (int i = 0; i < NUM_PENALTY; i++) {
-//        gotoxy(penalty[i].x, penalty[i].y);
-//        printf("▶");
-//    }
-//    for (int i = 0; i < monsterNum; i++) {
-//        gotoxy(monster[i].x, monster[i].y);
-//        printf("◆");
-//    }
-//}
-//몬스터가 맵 지우면 다시 그리기
-//void checkErasing(int x, int y) {
-//    if (x == treasure.x && y == treasure.y) {
-//        gotoxy(treasure.x, treasure.y);
-//        if (treasureFound == 1) {
-//            printf("★");
-//        }
-//        else {
-//            printf("▶");
-//        }
-//    }
-//    for (int i = 0; i < NUM_GIFTS; i++) {
-//        if (x == gift[i].x && y == gift[i].y)
-//        {
-//            gotoxy(gift[i].x, gift[i].y);
-//            printf("▶");
-//        }
-//    }
-//    for (int i = 0; i < NUM_PENALTY; i++) {
-//        if (x == penalty[i].x && y == penalty[i].y)
-//        {
-//            gotoxy(penalty[i].x, penalty[i].y);
-//            printf("▶");
-//        }
-//    }
-//}
 
 //남은 게임시간 감소 
 void recordAndEndOnTime(int x)
@@ -709,7 +680,7 @@ int checkCollision(Pointer pos1, Pointer pos2) {
 }
 void checkErasing(Pointer monster) {
     if (checkCollision(monster, treasure)) {
-        gotoxy(treasure.x, treasure.y);
+        gotoxy(treasure.x, treasure.y+1);
         if (treasureFound == 1) {
             printf("★");
         }
@@ -720,14 +691,14 @@ void checkErasing(Pointer monster) {
     for (int i = 0; i < NUM_GIFTS; i++) {
         if (checkCollision(monster, gift[i]))
         {
-            gotoxy(gift[i].x, gift[i].y);
+            gotoxy(gift[i].x, gift[i].y+1);
             printf("▶");
         }
     }
     for (int i = 0; i < NUM_PENALTY; i++) {
         if (checkCollision(monster, penalty[i]))
         {
-            gotoxy(penalty[i].x, penalty[i].y);
+            gotoxy(penalty[i].x, penalty[i].y+1);
             printf("▶");
         }
     }
@@ -771,23 +742,23 @@ void eraseSideBox() {
 //선택지
 void favorableQuestion() {
     char* question[] = {
-    "%s야 나 살찐 것 같지?",
-    "%s야 내 어디가 좋아?",
-    "더 이상 연락하지 마",
-    "예쁜 디저트를 먹으러 갔을 때",
-    "어떤 옷이 나아?",
-    "세젤예랑 만나고 10억 받기 VS 나랑 만나기, 뭐 고를 거야?",
-    "아까 지나간 사람 엄청 예쁘지?",
-    "전 여자친구랑 나랑 누가 더 나아?",
-    "나 이거 먹고 싶은데, 너도 먹을 거야?"
+    "Q. '나 살찐 것 같지?’에 대한 가장 적절한 대답은?",
+    "Q. '내 어디가 좋아?’에 대한 가장 적절한 대답은?",
+    "Q. '더 이상 연락하지 마’의 속뜻은?",
+    "Q. 예쁜 디저트를 먹으러 갔을 때",
+    "Q. '어떤 옷이 나아?’에 대한 가장 적절한 대답은?",
+    "Q. 세젤예랑 만나고 10억 받기 VS 나랑 만나기",
+    "Q. 아까 지나간 사람 엄청 예쁘지?",
+    "Q. 전 여자친구랑 나랑 누가 더 나아?",
+    "Q. 나 이거 먹고 싶은데, 너도 먹을 거야?"
     };
     char* favorableSelection1[] = {
-        "1) 맨날 많이 먹으니까 찌지.",
+        "1) 별로 안 먹던데 왜 찌지?",
         "1) 착해서 좋아",
-        "1) 알겠어",
+        "1) 연락하지 마",
         "1) 맛있겠다며 먼저 먹여주기",
         "1) 아무거나 입어도 다 예쁜데?",
-        "1) 너랑 만나야지!",
+        "1) 10억 받고 너랑 만나야지!",
         "1) 아까 누가 지나갔어?",
         "1) 전 여자친구가 참 착한 애긴 했어",
         "1) 난 안 먹을래"
@@ -816,9 +787,8 @@ void favorableQuestion() {
         "3) 난 전 여자친구 없는데?",
         "3) 나도 먹고 싶었는데! 같이 먹자"
     };
-
-    time_t pause_start_time = time(NULL);
     drawSideBox();
+    time_t pause_start_time = time(NULL);
     gotoxy(MAP_WIDTH + 5, 5);
     printf("%s", question[questionNum]);
     gotoxy(MAP_WIDTH + 5, 6);

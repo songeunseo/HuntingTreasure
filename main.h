@@ -95,6 +95,7 @@ void checkGift();
 void checkPenalty();
 void checkObstacle();
 int checkCollision(Pointer pos1, Pointer pos2);
+void checkErasing(Pointer monster);
 
 //void rand_store();
 void penalty_func();
@@ -118,8 +119,6 @@ void gotoxy(int x, int y);
 void CursorControl(bool flag);
 
 // 변수
-
-
 int gametime = 180;//게임 시간
 int score = 0;
 double playertick = 31.25;
@@ -139,10 +138,4 @@ int monster_y_perc[HARD_MONSTER] = { 0 };
 int monsterNum;
 int giftNum;
 int penaltyNum;
-
-//int player[1][2] = { 0 };
-//int treasure[1][2] = { 0 };
-//int gift[NUM_GIFTS][2] = { 0 };
-//int penalty[NUM_PENALTY][2] = { 0 };
-//int monster[HARD_MONSTER][2] = { 0 };
 int questionNum = 0;
