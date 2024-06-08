@@ -21,7 +21,6 @@ typedef struct {
     int y;
 } Pointer;
 
-
 //기호상수
 #define MENU_LEFT_ALIGN 15
 #define MENU_TOP_ALIGN 9
@@ -96,7 +95,7 @@ void checkObstacle();
 int checkCollision(Pointer pos1, Pointer pos2);
 void checkErasing(int x, int y);
 
-//void rand_store();
+void rand_store();
 void penalty_func();
 void penaltyPrint(int x);
 

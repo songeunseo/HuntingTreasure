@@ -110,9 +110,8 @@ void printMap() {
     }
 }
 void updateMap(int oldX, int oldY, int newX, int newY, char character) {
-    // 이전 위치가 벽이나 깃발이 아닌 경우 지우기
     if (map[oldY][oldX] != WALL && map[oldY][oldX] != TREASURE && map[oldY][oldX] != GIFT && map[oldY][oldX] != PENALTY) {
-        map[oldY][oldX] = ' '; // SPACE를 나타내는 문자
+        map[oldY][oldX] = SPACE; // SPACE를 나타내는 문자
         gotoxy(oldX, oldY + 1);
         printf(" ");
     }
@@ -564,10 +563,6 @@ void initGameVariables() {
     score = 0;
     gametime = 180;
 }
-void initTick() {
-    playertick = 31.25;
-    monstertick = 125;
-}
 
 //남은 게임시간 감소 
 void recordAndEndOnTime(int x)
@@ -626,6 +621,7 @@ void checkGift() {
                 initTick();
                 revealTreasureDirection(i);
             }
+            rand_store();
         }
     }
 }
@@ -689,6 +685,37 @@ void checkErasing(int x, int y) {
     }
 }
 
+//지혁
+//일정확률로 나오는 상점
+void rand_store()
+{
+    drawSideBox();
+    int choose;
+    gotoxy(MAP_WIDTH + 6, 5);
+    printf("1.몬스터 속도 감소(게임 시간 10초 소모)");
+    gotoxy(MAP_WIDTH + 6, 6);
+    printf("2.플레이어 속도 증가(게임 시간 10초 소모)");
+    gotoxy(MAP_WIDTH + 6, 7);
+    printf("3.남은 시간 증가(게임 시간 30초 증가)");
+    gotoxy(MAP_WIDTH + 6, 8);
+    printf("선택: ");
+    scanf("%d", &choose);//선택값 입력
+    switch (choose)// 선택값에 따라 다른 효과
+    {
+    case 1:
+        gametime -= 10;
+        monstertick *= 2;
+        break;
+    case 2:
+        gametime -= 10;
+        playertick *= 0.5;
+        break;
+    case 3:
+        gametime += 30;
+        break;
+    }
+    eraseSideBox();
+}
 //벌칙 깃발과 접촉시 생기는 패널티
 void penalty_func()
 {
@@ -727,62 +754,61 @@ void eraseSideBox() {
 //선택지
 void favorableQuestion() {
     char* question[] = {
-    "Q. '나 살찐 것 같지?’에 대한 가장 적절한 대답은?",
-    "Q. '내 어디가 좋아?’에 대한 가장 적절한 대답은?",
-    "Q. '더 이상 연락하지 마’의 속뜻은?",
-    "Q. 예쁜 디저트를 먹으러 갔을 때",
-    "Q. '어떤 옷이 나아?’에 대한 가장 적절한 대답은?",
-    "Q. 세젤예랑 만나고 10억 받기 VS 나랑 만나기",
-    "Q. 아까 지나간 사람 엄청 예쁘지?",
-    "Q. 전 여자친구랑 나랑 누가 더 나아?",
-    "Q. 나 이거 먹고 싶은데, 너도 먹을 거야?"
+    "나 요즘 너무 살찐 것 같지? ㅠㅠ",
+    "넌 내 어디가 좋아? 장난치지 말구!",
+    "더 이상 연락하지 마, 라는 말을 들었다! 속뜻은?",
+    "이 디저트 너무 예쁘고 맛있어 보인다, 라는 말을 들었다! 어떻게 행동할 것인가?",
+    "어떤 옷이 제일 나아? 너가 골라주는 거 입을래!",
+    "세젤예랑 만나고 10억 받을래, 아님 나랑 만날래?",
+    "아까 지나간 사람 진짜 엄청 예쁘지!!",
+    "혹시 전 여자친구랑 나랑 누가 더 나아?",
+    "나 이 케이크 먹고 싶은데, 너도 먹을래?"
     };
     char* favorableSelection1[] = {
-        "1) 별로 안 먹던데 왜 찌지?",
-        "1) 착해서 좋아",
+        "1) 그니까 별로 먹지도 않는데 왜 찌지?",
+        "1) 착해서 좋아하지~",
         "1) 연락하지 마",
         "1) 맛있겠다며 먼저 먹여주기",
         "1) 아무거나 입어도 다 예쁜데?",
-        "1) 10억 받고 너랑 만나야지!",
-        "1) 아까 누가 지나갔어?",
-        "1) 전 여자친구가 참 착한 애긴 했어",
-        "1) 난 안 먹을래"
+        "1) 에이, 너랑 만나야지!",
+        "1) 아까 누구 지나갔어?",
+        "1) 으으음.... 아 왜 그런 걸 물어봐~",
+        "1) 난 단 거 싫어서.. 안 먹을래"
     };
 
     char* favorableSelection2[] = {
-        "2) 하나도 안 쪘어",
-        "2) 그런 게 어디 있어~ 너라서 좋아",
+        "2) 안 찐 거 같은데..? 쪘어?",
+        "2) 아 그런 게 어디 있어~ 좋으면 좋은 거지~",
         "2) 화 풀릴 때까지 계속 연락해",
         "2) 사진 찍고 싶을 수 있으니 기다리기",
         "2) 처음보단 두 번째 거가 낫다!",
-        "2) 세상에서 제일 예쁜 사람이랑 만날게",
-        "2) 응 예쁘더라",
+        "2) 이건 너무 밸붕인데..? 미안하다 ㅎㅎ",
+        "2) 예쁘긴 하더라 ㅎㅎ",
         "2) 당연히 너가 제일 좋지!",
-        "2) 너 먹고 싶으면 먹어"
+        "2) 너 먹고 싶으면 많이 먹어~"
     };
 
     char* favorableSelection3[] = {
-        "3) 살찐 건 모르겠고 예뻐",
-        "3) 예뻐서 좋아",
+        "3) 살찐 건 모르겠고 예쁘기만 한데?",
+        "3) 너무 너무 예뻐서 좋아하지~",
         "3) 평생 볼 생각도 하지마",
-        "3) 맛있는지 먹어보겠다며 먼저 먹어보기",
-        "3) 둘 다 예쁜데 더 편한 옷이 낫지 않을까?",
+        "3) 맛있는지 확인해보겠다며 먼저 먹어보기",
+        "3) 둘 다 너무 예쁜데 더 편한 바지가 낫지 않을까?",
         "3) 이미 만나고 있는데 10억 어딨지?",
         "3) 하나도 안 예뻤는데?",
-        "3) 난 전 여자친구 없는데?",
-        "3) 나도 먹고 싶었는데! 같이 먹자"
+        "3) 난 전여친 같은 거 없는데?",
+        "3) 나도 먹고 싶었는데! 다른 거 더 먹고 싶은 건 없어??"
     };
     drawSideBox();
-    time_t pause_start_time = time(NULL);
-    gotoxy(MAP_WIDTH + 5, 5);
-    printf("%s", question[questionNum]);
-    gotoxy(MAP_WIDTH + 5, 6);
+    gotoxy(MAP_WIDTH + 6, 5);
+    printf("%s아(야), %s", name, question[questionNum]);
+    gotoxy(MAP_WIDTH + 6, 6);
     printf("%s", favorableSelection1[questionNum]);
-    gotoxy(MAP_WIDTH + 5, 7);
+    gotoxy(MAP_WIDTH + 6, 7);
     printf("%s", favorableSelection2[questionNum]);
-    gotoxy(MAP_WIDTH + 5, 8);
+    gotoxy(MAP_WIDTH + 6, 8);
     printf("%s", favorableSelection3[questionNum]);
-    gotoxy(MAP_WIDTH + 5, 9);
+    gotoxy(MAP_WIDTH + 6, 9);
     printf("답: ");
     int answer;
     scanf("%d", &answer);
