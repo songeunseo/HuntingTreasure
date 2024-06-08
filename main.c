@@ -481,35 +481,22 @@ void drawPlayer() {
 }
 
 //몬스터 이동
-void moveMonster(Pointer* monster, int i) {
-    direction_x[i] = ((rand() % 10) + 1) > monster_x_perc[i] ? 1 : -1;
-    direction_y[i] = ((rand() % 10) + 1) > monster_x_perc[i] ? 1 : -1;
+void moveMonster(Pointer* monster) {
+    int direction = rand() % 4;
+    int dx = 0, dy = 0;
 
-    if (monster->x == 1) {
-        monster->x++;
-        monster_x_perc[i] = 2;
-    } else if (monster->x == MAP_WIDTH - 2) {
-        monster->x--;
-        monster_x_perc[i] = 8;
+    switch (direction) {
+    case 0: dy = -1; break; // 위
+    case 1: dy = 1; break;  // 아래
+    case 2: dx = -1; break; // 왼쪽
+    case 3: dx = 1; break;  // 오른쪽
     }
 
-    if (monster->y == 1) {
-        monster->y++;
-        monster_y_perc[i] = 2;
-    } else if (monster->y == MAP_HEIGHT - 2) {
-        monster->y--;
-        monster_y_perc[i] = 8;
-    }
+    int newX = monster->x + dx;
+    int newY = monster->y + dy;
 
-    int newX = monster->x, newY = monster->y;
-
-    if (rand() % 2 == 0)
-        newX += direction_x[i];
-    else
-        newY += direction_y[i];
-
-    if (map[newY][newX] != WALL && map[newY][newX] != TREASURE && map[newY][newX] != GIFT && map[newY][newX] != PENALTY)
-    {
+    if (map[newY][newX] != WALL && map[newY][newX] != TREASURE && map[newY][newX] != GIFT && map[newY][newX] != PENALTY) {
+        updateMap(monster->x, monster->y, newX, newY, MONSTER);
         monster->x = newX;
         monster->y = newY;
     }

@@ -68,9 +68,8 @@ void eraseSelectionBox(int x, int y);
 int gameStart();
 void printProgressBar(int elapsed, int total);
 void movePlayer(Pointer* pos, int dx, int dy);
-void processInput();
 void printPlayer();
-void moveMonster(Pointer* monster, int i);
+void moveMonster(Pointer* monster);
 void printMonster();
 
 void initBoard();
