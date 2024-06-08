@@ -114,6 +114,7 @@ void updateMap(int oldX, int oldY, int newX, int newY, char character) {
         map[oldY][oldX] = SPACE;
         gotoxy(oldX, oldY + 1);
         printf(" ");
+        checkErasing(monster[i]);
     }
     map[newY][newX] = character;
     printf("\033[%d;%dH", newY + 2, newX + 1);
