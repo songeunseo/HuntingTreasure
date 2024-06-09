@@ -88,6 +88,53 @@ void getUserName() {
     Sleep(1000);
 }
 
+//초기화
+void initBoard() {
+    for (int i = 0; i < MAP_HEIGHT; i++) {
+        for (int j = 0; j < MAP_WIDTH; j++) {
+            if (i == 0 || i == MAP_HEIGHT - 2 || j == 0 || j == MAP_WIDTH - 1) {
+                map[i][j] = WALL;
+            }
+            else {
+                map[i][j] = SPACE;
+            }
+        }
+    }
+    initRandomPosition(&player);
+    map[player.y][player.x] = PLAYER;
+    initRandomPosition(&treasure);
+    map[treasure.y][treasure.x] = TREASURE;
+
+    for (int i = 0; i < NUM_GIFTS; i++) {
+        initRandomPosition(&gift[i]);
+        map[gift[i].y][gift[i].x] = GIFT;
+    }
+
+    for (int i = 0; i < NUM_PENALTY; i++) {
+        initRandomPosition(&penalty[i]);
+        map[penalty[i].y][penalty[i].x] = PENALTY;
+    }
+
+    for (int i = 0; i < monsterNum; i++) {
+        initRandomPosition(&monster[i]);
+        map[monster[i].y][monster[i].x] = MONSTER;
+    }
+}
+void initRandomPosition(Pointer* object) {
+    do {
+        object->x = rand() % (MAP_WIDTH - 3) + 2;
+        object->y = rand() % (MAP_HEIGHT - 4) + 2;
+    } while (map[object->y][object->x] != SPACE);
+}
+void initGameVariables() {
+    playertick = 1; //변경 필요
+    monstertick = 125;
+    endsignal = 0;
+    treasureFound = 0;
+    score = 0;
+    gametime = 180;
+}
+
 void printArea() {
     gotoxy(0, 1);
 
@@ -156,65 +203,6 @@ void updateMap(int oldX, int oldY, int newX, int newY, char character) {
     else if (character == MONSTER) {
         printf("M");
     }
-}
-
-//게임 설명
-void gameRule() {
-    int xPos, yPos;
-
-    PlaySound(NULL, NULL, 0); // 현재 재생 중인 사운드를 중지
-    PlaySound(TEXT("sound\\gamerule.wav"), NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
-    system("cls");
-
-    const char* messages[] = {
-        "마계에서 인간 세계로 내려온 마녀인 당신!",
-        "마계의 여왕이 되기 위해서는, 인간들의 하트를 빼앗아야 합니다.",
-        "인간들에게 호감을 얻고, 하트를 획득해보세요!",
-        " ",
-        "플레이어는 P로 표시되며, 깃발은 F로 표시됩니다.",
-        "플레이어는 방향키를 이용해 이동할 수 있습니다.",
-        " ",
-        "1단계에서는 '그린 하트'(900점), 2단계에서는 '핑크 하트'(1200점) 이상을 얻어야 다음 단계로 넘어갈 수 있습니다.",
-        "3단계에서 '레드 하트'(1500점)을 얻으면 여왕이 될 수 있습니다."
-        "게임을 시작하려면 아무 키나 누르세요..."
-    };
-
-    // 프레임 그리기
-    for (int i = 0; i < consoleHeight; i++) {
-        gotoxy(0, i);
-        if (i == 0) {
-            printf("┌");
-            for (int j = 0; j < consoleWidth - 2; j++) printf("─");
-            printf("┐");
-        }
-        else if (i == consoleHeight - 1) {
-            printf("└");
-            for (int j = 0; j < consoleWidth - 2; j++) printf("─");
-            printf("┘");
-        }
-        else {
-            printf("│");
-            gotoxy(consoleWidth - 1, i);
-            printf("│");
-        }
-    }
-
-    // Print top message
-    xPos = (consoleWidth - strlen("Skip을 하려면 엔터키를 누르세요.")) / 2;
-    gotoxy(xPos, 1); // 화면 상단 중앙에 배치
-    printf("Skip을 하려면 엔터키를 누르세요.");
-
-    // Print main messages
-    yPos = (consoleHeight - 7) / 2; // 중앙에서부터 배치 시작
-    for (int i = 0; i < 10; i++) {
-        xPos = (consoleWidth - strlen(messages[i])) / 2;
-        gotoxy(xPos, yPos + i);
-        slowPrint(15, messages[i]);
-    }
-
-    _getch();
-    PlaySound(NULL, NULL, 0);
-    menu();
 }
 
 void menu() {
@@ -383,6 +371,65 @@ void runDifficultyMenu(int num)
     }
 }
 
+//게임 설명
+void gameRule() {
+    int xPos, yPos;
+
+    PlaySound(NULL, NULL, 0); // 현재 재생 중인 사운드를 중지
+    PlaySound(TEXT("sound\\gamerule.wav"), NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
+    system("cls");
+
+    const char* messages[] = {
+        "마계에서 인간 세계로 내려온 마녀인 당신!",
+        "마계의 여왕이 되기 위해서는, 인간들의 하트를 빼앗아야 합니다.",
+        "인간들에게 호감을 얻고, 하트를 획득해보세요!",
+        " ",
+        "플레이어는 P로 표시되며, 깃발은 F로 표시됩니다.",
+        "플레이어는 방향키를 이용해 이동할 수 있습니다.",
+        " ",
+        "1단계에서는 '그린 하트'(900점), 2단계에서는 '핑크 하트'(1200점) 이상을 얻어야 다음 단계로 넘어갈 수 있습니다.",
+        "3단계에서 '레드 하트'(1500점)을 얻으면 여왕이 될 수 있습니다."
+        "게임을 시작하려면 아무 키나 누르세요..."
+    };
+
+    // 프레임 그리기
+    for (int i = 0; i < consoleHeight; i++) {
+        gotoxy(0, i);
+        if (i == 0) {
+            printf("┌");
+            for (int j = 0; j < consoleWidth - 2; j++) printf("─");
+            printf("┐");
+        }
+        else if (i == consoleHeight - 1) {
+            printf("└");
+            for (int j = 0; j < consoleWidth - 2; j++) printf("─");
+            printf("┘");
+        }
+        else {
+            printf("│");
+            gotoxy(consoleWidth - 1, i);
+            printf("│");
+        }
+    }
+
+    // Print top message
+    xPos = (consoleWidth - strlen("Skip을 하려면 엔터키를 누르세요.")) / 2;
+    gotoxy(xPos, 1); // 화면 상단 중앙에 배치
+    printf("Skip을 하려면 엔터키를 누르세요.");
+
+    // Print main messages
+    yPos = (consoleHeight - 7) / 2; // 중앙에서부터 배치 시작
+    for (int i = 0; i < 10; i++) {
+        xPos = (consoleWidth - strlen(messages[i])) / 2;
+        gotoxy(xPos, yPos + i);
+        slowPrint(15, messages[i]);
+    }
+
+    _getch();
+    PlaySound(NULL, NULL, 0);
+    menu();
+}
+
 // 게임 함수
 int gameStart() {
     system("cls");
@@ -546,54 +593,7 @@ void printMonster() {
     }
 }
 
-//초기화
-void initBoard() {
-    for (int i = 0; i < MAP_HEIGHT; i++) {
-        for (int j = 0; j < MAP_WIDTH; j++) {
-            if (i == 0 || i == MAP_HEIGHT - 2 || j == 0 || j == MAP_WIDTH - 1) {
-                map[i][j] = WALL;
-            }
-            else {
-                map[i][j] = SPACE;
-            }
-        }
-    }
-    initRandomPosition(&player);
-    map[player.y][player.x] = PLAYER;
-    initRandomPosition(&treasure);
-    map[treasure.y][treasure.x] = TREASURE;
 
-    for (int i = 0; i < NUM_GIFTS; i++) {
-        initRandomPosition(&gift[i]);
-        map[gift[i].y][gift[i].x] = GIFT;
-    }
-
-    for (int i = 0; i < NUM_PENALTY; i++) {
-        initRandomPosition(&penalty[i]);
-        map[penalty[i].y][penalty[i].x] = PENALTY;
-    }
-
-    for (int i = 0; i < monsterNum; i++) {
-        initRandomPosition(&monster[i]);
-        map[monster[i].y][monster[i].x] = MONSTER;
-        //direction_x[i] = (rand() % 2) ? 1 : -1;
-        //direction_y[i] = (rand() % 2) ? 1 : -1;
-    }
-}
-void initRandomPosition(Pointer* object) {
-    do {
-        object->x = rand() % (MAP_WIDTH - 3) + 2;
-        object->y = rand() % (MAP_HEIGHT - 4) + 2;
-    } while (map[object->y][object->x] != SPACE);
-}
-void initGameVariables() {
-    playertick = 1; //변경 필요
-    monstertick = 125;
-    endsignal = 0;
-    treasureFound = 0;
-    score = 0;
-    gametime = 180;
-}
 
 //남은 게임시간 감소 
 void recordAndEndOnTime(int x)
