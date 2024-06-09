@@ -489,8 +489,6 @@ void printPlayer(Pointer* pos, int dx, int dy) {
     }
 }
 void movePlayer() {
-    int oldX = player.x;
-    int oldY = player.y;
     if (_kbhit()) {
         int key = _getch();
         switch (key) {
@@ -510,10 +508,6 @@ void movePlayer() {
             menu();
             break;
         }
-    }
-    // 플레이어가 이동한 경우에만 화면 업데이트
-    if (oldX != player.x || oldY != player.y) {
-        updateMap(oldX, oldY, player.x, player.y, PLAYER);
     }
 }
 
