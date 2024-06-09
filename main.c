@@ -1,8 +1,18 @@
 ﻿#include "main.h"
 
+void getConsoleSize(int* width, int* height) {
+    CONSOLE_SCREEN_BUFFER_INFO csbi;
+    int cols, rows;
+
+    GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
+    cols = csbi.srWindow.Right - csbi.srWindow.Left + 1;
+    rows = csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
+
+    *width = cols;
+    *height = rows;
+}
+
 int main(void) {
-    CursorControl(false);
-    srand(time(NULL));
     gotoxy(10, 3);
     printf("C프로그래밍 4팀 팀프로젝트 보물찾기게임");
     gotoxy(8, 4);
@@ -11,7 +21,8 @@ int main(void) {
     printf("전체 화면으로 확대바랍니다!(확대 후 아무키나 누르시오)");
     _getch();
     system("cls");
-    getConsoleSize(&consoleWidth, &consoleHeight);
+    CursorControl(false);
+    srand(time(NULL));
     initBoard();
 
     getUserName();
@@ -19,72 +30,16 @@ int main(void) {
 
     return 0;
 }
+
 void getUserName() {
-    
-    const char* borderTop[] = {
-        "+----------------------------------------------------------------------------+",
-        "|  Hunting Treasure.exe                                                 [x]  |",
-        "+----------------------------------------------------------------------------+"
-    };
 
-    const char* sugar2[] = {
-        " _____  _   _  _____   ___  ______  _____ ",
-        "/  ___|| | | ||  __ \\ / _ \\ | ___ \\/ __  \\",
-        "\\ `--. | | | || |  \\// /_\\ \\| |_/ /`' / /'",
-        " `--. \\| | | || | __ |  _  ||    /   / /  ",
-        "/\\__/ /| |_| || |_\\ \\| | | || |\\ \\ ./ /___",
-        " \\____/  \\___/  \\____/\\_| |_/\\_| \\_|\\_____/ ",
-        "                                           ",
-        "                                           "
-    };
-
-    const char* rune[] = {
-        " ______  _   _  _   _  _____ ",
-        "| ___ \\| | | || \\ | ||  ___|",
-        "| |_/ /| | | ||  \\| || |__  ",
-        "|    / | | | || . ` ||  __| ",
-        "| |\\ \\ | |_| || |\\  || |___ ",
-        "\\_| \\_| \\___/ \\_| \\_/\\____/ ",
-        "                            ",
-        "                            "
-    };
-
-    const char* menu[] = {
-        "이름을 입력해주세요! "
-    };
-
-    const char* borderBottom[] = {
-        "+----------------------------------------------------------------------------+"
-    };
-
-    system("cls");
-
-    // 위쪽 테두리 출력
-    printCentered(borderTop, sizeof(borderTop) / sizeof(borderTop[0]), -12);
-    // "SUGAR²" 출력
-    printCentered(sugar2, sizeof(sugar2) / sizeof(sugar2[0]), -5);
-    // "RUNE" 출력
-    printCentered(rune, sizeof(rune) / sizeof(rune[0]), 2);
-    // 아래쪽 테두리 출력
-    printCentered(borderBottom, sizeof(borderBottom) / sizeof(borderBottom[0]), 10);
-    // 좌우 테두리 출력
-    int leftBorderX = (consoleWidth - strlen(borderBottom[0])) / 2;
-    for (int y = (consoleHeight - 20) / 2; y < (consoleHeight + 20) / 2; y++) {
-        gotoxy(leftBorderX, y);
-        printf("|");
-        gotoxy(leftBorderX + strlen(borderBottom[0]) - 1, y);
-        printf("|");
-    }
-    
-    // 질문 출력
-    printCentered(menu, sizeof(menu) / sizeof(menu[0]), 8);
-
-    gotoxy((consoleWidth - strlen(menu[0])) / 2, consoleHeight + 8);
+    printArea();
+    gotoxy(10, 6);
+    printf("당신의 이름은 무엇인가요? ");
+    gotoxy(10, 7);
     scanf("%s", name);
-
-    // 입력 받은 이름을 같은 위치에 출력
-    gotoxy((consoleWidth - strlen(menu[0])) / 2, (consoleHeight / 2) + 8);
-    printf("   %s님 안녕하세요!        ", name);
+    gotoxy(10, 9);
+    printf("%s님 안녕하세요!", name);
     Sleep(1000);
 }
 
@@ -113,23 +68,24 @@ void printArea() {
     }
     printf("+");
 }
+
 void printMap() {
     printf("\n");
     for (int i = 0; i < MAP_HEIGHT; i++) {
         for (int j = 0; j < MAP_WIDTH; j++) {
-            char temp = map[i][j];
-            if (temp == SPACE || temp == WALL) {
+            char mark = map[i][j];
+            if (mark == SPACE || mark == WALL) {
                 printf(" ");
             }
-            else if (temp == PLAYER) {
+            else if (mark == PLAYER) {
                 SetColor(12);
-                printf("P");
+                printf("*");
                 SetColor(15);
             }
-            else if (temp == MONSTER) {
-                printf("M");
+            else if (mark == MONSTER) {
+                printf("&");
             }
-            else if (temp == TREASURE)
+            else if (mark == TREASURE)
                 printf("F");
             else {
                 printf("F");
@@ -138,40 +94,42 @@ void printMap() {
         printf("\n");
     }
 }
-void updateMap(int oldX, int oldY, int newX, int newY, char character) {
+
+void updateMap(int oldX, int oldY, int newX, int newY, char type) {
     if (map[oldY][oldX] != WALL && map[oldY][oldX] != TREASURE && map[oldY][oldX] != GIFT && map[oldY][oldX] != PENALTY) {
-        map[oldY][oldX] = SPACE; // SPACE를 나타내는 문자
+        map[oldY][oldX] = SPACE;
         gotoxy(oldX, oldY + 1);
         printf(" ");
     }
-
-    // 새로운 위치를 업데이트
-    map[newY][newX] = character;
-    gotoxy(newX, newY + 1); // 커서 이동
-    if (character == PLAYER) {
+    map[newY][newX] = type; // 새로운 위치를 업데이트
+    gotoxy(newX, newY + 1);
+    if (type == PLAYER) {
         SetColor(12);
-        printf("P");
+        printf("*");
         SetColor(15);
     }
-    else if (character == MONSTER) {
-        printf("M");
+    else if (type == MONSTER) {
+        printf("&");
     }
 }
 
 //게임 설명
 void gameRule() {
-    int xPos, yPos;
+    int screenWidth, screenHeight;
+    int x, y;
 
     PlaySound(NULL, NULL, 0); // 현재 재생 중인 사운드를 중지
     PlaySound(TEXT("sound\\gamerule.wav"), NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
     system("cls");
+
+    getConsoleSize(&screenWidth, &screenHeight);
 
     const char* messages[] = {
         "마계에서 인간 세계로 내려온 마녀인 당신!",
         "마계의 여왕이 되기 위해서는, 인간들의 하트를 빼앗아야 합니다.",
         "인간들에게 호감을 얻고, 하트를 획득해보세요!",
         " ",
-        "플레이어는 P로 표시되며, 깃발은 F로 표시됩니다.",
+        "플레이어는 ♥으로 표시되며, 깃발은 ▶으로 표시됩니다.",
         "플레이어는 방향키를 이용해 이동할 수 있습니다.",
         " ",
         "1단계에서는 '그린 하트'(900점), 2단계에서는 '핑크 하트'(1200점) 이상을 얻어야 다음 단계로 넘어갈 수 있습니다.",
@@ -179,53 +137,50 @@ void gameRule() {
         "게임을 시작하려면 아무 키나 누르세요..."
     };
 
-    // 프레임 그리기
-    for (int i = 0; i < consoleHeight; i++) {
+    for (int i = 0; i < screenHeight; i++) {
         gotoxy(0, i);
         if (i == 0) {
             printf("┌");
-            for (int j = 0; j < consoleWidth - 2; j++) printf("─");
+            for (int j = 0; j < screenWidth - 2; j++) printf("─");
             printf("┐");
         }
-        else if (i == consoleHeight - 1) {
+        else if (i == screenHeight - 1) {
             printf("└");
-            for (int j = 0; j < consoleWidth - 2; j++) printf("─");
+            for (int j = 0; j < screenWidth - 2; j++) printf("─");
             printf("┘");
         }
         else {
             printf("│");
-            gotoxy(consoleWidth - 1, i);
+            gotoxy(screenWidth - 1, i);
             printf("│");
         }
     }
 
-    // Print top message
-    xPos = (consoleWidth - strlen("Skip을 하려면 엔터키를 누르세요.")) / 2;
-    gotoxy(xPos, 1); // 화면 상단 중앙에 배치
+    x = (screenWidth - strlen("Skip을 하려면 엔터키를 누르세요.")) / 2; // 중앙 정렬
+    gotoxy(x, 1);
     printf("Skip을 하려면 엔터키를 누르세요.");
 
-    // Print main messages
-    yPos = (consoleHeight - 7) / 2; // 중앙에서부터 배치 시작
-    for (int i = 0; i < 10; i++) {
-        xPos = (consoleWidth - strlen(messages[i])) / 2;
-        gotoxy(xPos, yPos + i);
+    y = (screenHeight - 7) / 2;
+    for (int i = 0; i < 8; i++) {
+        x = (screenWidth - strlen(messages[i])) / 2;
+        gotoxy(x, y + i);
         slowPrint(15, messages[i]);
     }
-
     _getch();
     PlaySound(NULL, NULL, 0);
-    menu();
+    difficultyMenu();
 }
 
 void menu() {
-    initGameVariables(); // 게임 변수 초기화 
+    initGameVariables();
     system("cls");
     PlaySound(TEXT("sound\\gamestart.wav"), NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
     printArea();
-    printMenu(); // 메뉴내용 출력
-    printSelectionBox(MENU_LEFT_ALIGN - 3, MENU_TOP_ALIGN - 1); // 메뉴박스 출력
-    switchMenu(); // 메뉴 입력받기
+    printMenu();
+    printSelectionBox(MENU_LEFT_ALIGN - 3, MENU_TOP_ALIGN - 1);
+    switchMenu();
 }
+
 void printMenu()
 {
     gotoxy(7, 5);
@@ -240,10 +195,10 @@ void printMenu()
     gotoxy(MENU_LEFT_ALIGN, MENU_TOP_ALIGN + MENU_LINE_SPACE * 2);
     printf("EXIT");
 }
-void switchMenu() {
-    int menuNum = 1; //1:게임시작, 2:게임설명, 3:EXIT
-    int key;
 
+void switchMenu() {
+    int menuNum = 1;
+    int key;
     while (1)
     {
         if (_kbhit() != 0)
@@ -254,7 +209,7 @@ void switchMenu() {
             {
                 break;
             }
-            if (key == 224) // 방향키 모두
+            if (key == 224) // 방향키
             {
                 key = _getch();
                 if (key == 72 && menuNum > 1) // 위쪽 방향키
@@ -272,10 +227,11 @@ void switchMenu() {
             }
 
         }
-        Sleep(200);
+        //Sleep(200);
     }
     runMenu(menuNum);
 }
+
 void runMenu(int menuNum)
 {
     switch (menuNum)
@@ -292,6 +248,7 @@ void runMenu(int menuNum)
         exit(0);
     }
 }
+
 void printSelectionBox(int x, int y)
 {
     gotoxy(x, y);
@@ -303,6 +260,7 @@ void printSelectionBox(int x, int y)
     gotoxy(x, y + 2);
     puts("└───────────────────────────────┘");
 }
+
 void eraseSelectionBox(int x, int y)
 {
     gotoxy(x, y);
@@ -314,6 +272,7 @@ void eraseSelectionBox(int x, int y)
     gotoxy(x, y + 2);
     puts("                                 ");
 }
+
 void difficultyMenu() {
     system("cls");
     printArea();
@@ -321,11 +280,11 @@ void difficultyMenu() {
     printSelectionBox(MENU_LEFT_ALIGN - 3, MENU_TOP_ALIGN - 1);
     switchDifficultyMenu();
 }
+
 void printDifficultyMenu()
 {
     gotoxy(13, 5);
     printf("난이도 설정\n");
-
     gotoxy(MENU_LEFT_ALIGN, MENU_TOP_ALIGN);
     printf("초급 Easy Mode");
     gotoxy(MENU_LEFT_ALIGN, MENU_TOP_ALIGN + MENU_LINE_SPACE);
@@ -333,10 +292,10 @@ void printDifficultyMenu()
     gotoxy(MENU_LEFT_ALIGN, MENU_TOP_ALIGN + MENU_LINE_SPACE * 2);
     printf("고급 Hard Mode");
 }
+
 void switchDifficultyMenu() {
     int key;
     int temp = 1;
-
     while (1) {
         if (_kbhit()) {
             key = _getch();
@@ -363,10 +322,11 @@ void switchDifficultyMenu() {
             }
 
         }
-        Sleep(200);
+        //Sleep(200);
     }
     runDifficultyMenu(temp);
 }
+
 void runDifficultyMenu(int num)
 {
     switch (num)
@@ -383,15 +343,12 @@ void runDifficultyMenu(int num)
     }
 }
 
-// 게임 함수
 int gameStart() {
     system("cls");
     PlaySound(NULL, NULL, 0);
     PlaySound(TEXT("sound\\gaming.wav"), NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
-
     initBoard();
     printMap();
-
 
     time_t start_time = time(NULL);
     clock_t player_std_time, monster_std_time, player_time, monster_time;
@@ -411,7 +368,7 @@ int gameStart() {
 
         checkFlag();
 
-        time_t current_time = time(NULL); // 현재 시간 받기
+        time_t current_time = time(NULL);
 
         if (player_duration >= playertick) { // playertick마다
             movePlayer();
@@ -424,13 +381,13 @@ int gameStart() {
         }
 
         if (current_time - start_time >= 1) {// 1초마다
-            int elapsed_time = current_time - start_time + item_time;// 경과된 시간 계산
-            int remaining_time = gametime - elapsed_time; // 남은 시간 계산
+            int elapsed_time = current_time - start_time + item_time;// 경과된 시간
+            int remaining_time = gametime - elapsed_time; // 남은 시간
             gotoxy(4, 0);
             printProgressBar(elapsed_time, gametime);
             gotoxy(0, MAP_HEIGHT + 1);
             printf("▤ 점수 : %04d\t", score);
-            printf("▤ 현재 레벨: %d", level); // 현재 레벨 출력
+            printf("▤ 현재 레벨: %d", level);
 
             if (remaining_time <= 0) {
                 endsignal = -1;
@@ -444,21 +401,20 @@ int gameStart() {
     return 0;
 }
 
-// 진행 바 생성 함수
-void printProgressBar(int elapsed, int total) {
-    int position = (int)(((double)elapsed / total) * BAR_LENGTH);
-    if (elapsed > 0)
+void printProgressBar(int elapsed_time, int gametime) {
+    int position = (int)(((double)elapsed_time / gametime) * BAR_LENGTH);
+    if (elapsed_time > 0)
     {
 
         gotoxy(57, 0);
         printf("           ");
         gotoxy(4, 0);
-        printf("%02d:%02d ", elapsed / 60, elapsed % 60);  // 경과 시간 출력
+        printf("%02d:%02d ", elapsed_time / 60, elapsed_time % 60);  // 경과 시간
     }
     else
     {
         gotoxy(57, 0);
-        printf("+%2d", -elapsed);
+        printf("+%2d", -elapsed_time);
         gotoxy(4, 0);
         printf("00:00 ");
     }
@@ -473,21 +429,21 @@ void printProgressBar(int elapsed, int total) {
             printf("-");
         }
     }
-    printf(" %2d:%02d", total / 60, total % 60);  // 총 시간 출력
-    fflush(stdout);  // Flush the output buffer to ensure the progress bar is printed
+    printf(" %2d:%02d", gametime / 60, gametime % 60);  // 총 시간
+    fflush(stdout);
 }
 
-//사용자 이동
-void printPlayer(Pointer* pos, int dx, int dy) {
-    int newX = pos->x + dx;
-    int newY = pos->y + dy;
+void printPlayer(Pointer* position, int dx, int dy) {
+    int newX = position->x + dx;
+    int newY = position->y + dy;
 
     if (map[newY][newX] != WALL) {
-        updateMap(pos->x, pos->y, newX, newY, PLAYER);
-        pos->x = newX;
-        pos->y = newY;
+        updateMap(position->x, position->y, newX, newY, PLAYER);
+        position->x = newX;
+        position->y = newY;
     }
 }
+
 void movePlayer() {
     int oldX = player.x;
     int oldY = player.y;
@@ -511,13 +467,20 @@ void movePlayer() {
             break;
         }
     }
-    // 플레이어가 이동한 경우에만 화면 업데이트
-    if (oldX != player.x || oldY != player.y) {
+    if (oldX != player.x || oldY != player.y) { // 플레이어가 이동한 경우에만 맵 업데이트
         updateMap(oldX, oldY, player.x, player.y, PLAYER);
     }
 }
 
-//몬스터 이동
+/*void drawPlayer() {
+    gotoxy(player.x, player.y + 1);
+    SetColor(12);
+    printf("P");
+    SetColor(15);
+    if (_kbhit())
+        printf("\b ");
+}*/
+
 void moveMonster(Pointer* monster) {
     int direction = rand() % 4;
     int dx = 0, dy = 0;
@@ -538,21 +501,19 @@ void moveMonster(Pointer* monster) {
         monster->y = newY;
     }
 }
+
 void printMonster() {
     for (int i = 0; i < monsterNum; i++) {
         int oldX = monster[i].x;
         int oldY = monster[i].y;
+        moveMonster(&monster[i], i);
 
-        moveMonster(&monster[i]);
-
-        // 몬스터가 이동한 경우에만 화면 업데이트
-        if (oldX != monster[i].x || oldY != monster[i].y) {
+        if (oldX != monster[i].x || oldY != monster[i].y) { // 몬스터가 이동한 경우에만 화면 업데이트
             updateMap(oldX, oldY, monster[i].x, monster[i].y, MONSTER);
         }
     }
 }
 
-//초기화
 void initBoard() {
     for (int i = 0; i < MAP_HEIGHT; i++) {
         for (int j = 0; j < MAP_WIDTH; j++) {
@@ -582,16 +543,16 @@ void initBoard() {
     for (int i = 0; i < monsterNum; i++) {
         initRandomPosition(&monster[i]);
         map[monster[i].y][monster[i].x] = MONSTER;
-        //direction_x[i] = (rand() % 2) ? 1 : -1;
-        //direction_y[i] = (rand() % 2) ? 1 : -1;
     }
 }
-void initRandomPosition(Pointer* object) {
+
+void initRandomPosition(Pointer* type) {
     do {
-        object->x = rand() % (MAP_WIDTH - 3) + 2;
-        object->y = rand() % (MAP_HEIGHT - 4) + 2;
-    } while (map[object->y][object->x] != SPACE);
+        type->x = rand() % (MAP_WIDTH - 3) + 2;
+        type->y = rand() % (MAP_HEIGHT - 4) + 2;
+    } while (map[type->y][type->x] != SPACE);
 }
+
 void initGameVariables() {
     playertick = 1; //변경 필요
     monstertick = 125;
@@ -601,7 +562,6 @@ void initGameVariables() {
     gametime = 180;
 }
 
-//남은 게임시간 감소 
 void recordAndEndOnTime(int x)
 {
     if (x <= 0) {
@@ -609,7 +569,6 @@ void recordAndEndOnTime(int x)
     }
 }
 
-//깃발 접촉
 void checkFlag()
 {
     checkTreasure();
@@ -617,67 +576,65 @@ void checkFlag()
     checkPenalty();
     checkObstacle();
 }
+
 void checkTreasure() {
     if (checkCollision(player, treasure))
     {
         //PlaySound(TEXT("sound\\jump02.wav"), NULL, SND_FILENAME | SND_ASYNC);
         treasureFound = 1;
         MessageBox(NULL, TEXT("보물을 발견하셨습니다!"), TEXT("TREASURE"), MB_OK);
-        int temp1 = MessageBox(NULL, TEXT("점수를 계산하시겠습니까?"), TEXT("TREASURE"), MB_YESNO);
-        if (temp1 == IDYES) {
+        int box = MessageBox(NULL, TEXT("점수를 계산하시겠습니까?"), TEXT("TREASURE"), MB_YESNO);
+        if (box == IDYES) {
             system("cls");
             endsignal = 1; //checkGameEnd()함수에서 endsingnal값으로 게임 종료 여부 확인
         }
         else {
             endsignal = 0;
             gotoxy(treasure.x, treasure.y + 1);
-            printf("T");
+            printf("!");
             map[treasure.y][treasure.x] = TREASURE;
 
             if (player.x > MAP_WIDTH / 2)
                 player.x--;
             else
                 player.x++;
-            gotoxy(player.x, player.y + 1);
-            SetColor(12);
-            printf("P");
-            SetColor(15);
+            //drawPlayer();
         }
     }
 }
+
 void checkGift() {
     for (int i = 0; i < 7; i++) {
         if (checkCollision(player, gift[i])) {
             gift[i].x = 0, gift[i].y = 0; // 접촉한 깃발 제거
-            if (i < 3) {
-                // 3개의 깃발은 favorableQuestion을 호출
+            if (i < 3) { // 3개의 깃발은 favorableQuestion을 호출
                 favorableQuestion();
             }
-            else if (i < 5) {
-                // 2개의 깃발은 점수 증가 & 페널티 무효화 이벤트
+            else if (i < 5) { // 2개의 깃발은 점수 증가
                 score += 300;
                 eventPrint();
             }
-            else {
-                // 엿보기 안경 획득
+            else { // 엿보기 안경 획득
                 revealTreasureDirection(i);
             }
-            if (rand() % 10 + 1 > RAND_STORE_CHANCE)
+            if (rand() % 10 + 1 > RAND_STORE_CHANCE) // 확률 따라서 랜덤 상점
                 rand_store();
         }
     }
 }
+
 void checkPenalty() {
     for (int i = 0; i < NUM_PENALTY; i++)
     {
         if (checkCollision(player, penalty[i]))
         {
             //PlaySound(TEXT("sound\\jump02.wav"), NULL, SND_FILENAME | SND_ASYNC);
-            penalty[i].x = 0, penalty[i].y = 0;// 접촉한 깃발 제거
+            penalty[i].x = 0, penalty[i].y = 0;
             penalty_func();
         }
     }
 }
+
 void checkObstacle()
 {
     for (int i = 0; i < monsterNum; i++)
@@ -686,7 +643,7 @@ void checkObstacle()
         {
             //PlaySound(TEXT("sound\\jump02.wav"), NULL, SND_FILENAME | SND_ASYNC);
             if (score >= 100)
-                score -= 100; // 점수감소
+                score -= 100;
             else
                 score = 0;
             player.x--;
@@ -695,11 +652,56 @@ void checkObstacle()
 
     }
 }
-int checkCollision(Pointer pos1, Pointer pos2) {
-    return (pos1.x == pos2.x && pos1.y == pos2.y);
+int checkCollision(Pointer position1, Pointer position2) {
+    return (position1.x == position2.x && position1.y == position2.y);
 }
 
-//사이드 박스
+void rand_store()
+{
+    drawSideBox();
+    gotoxy(MAP_WIDTH + 6, 5);
+    printf("1.몬스터 속도 감소(게임 시간 20초 소모)");
+    gotoxy(MAP_WIDTH + 6, 6);
+    printf("2.플레이어 속도 증가(게임 시간 20초 소모)");
+    gotoxy(MAP_WIDTH + 6, 7);
+    printf("3.남은 시간 증가(게임 시간 30초 증가)");
+    gotoxy(MAP_WIDTH + 6, 8);
+    printf("선택: ");
+    gotoxy(MAP_WIDTH + 10, 8);
+    char choose = _getch();
+    switch (choose)
+    {
+    case '1':
+        item_time += 20;
+        monstertick *= 2;
+        break;
+    case '2':
+        item_time += 20;
+        playertick *= 0.5;
+        break;
+    case '3':
+        item_time -= 30;
+        break;
+    }
+    eraseSideBox();
+}
+
+//벌칙 깃발과 접촉시 생기는 패널티
+void penalty_func()
+{
+    int penalty_rand = rand() % 2; //랜덤으로 패널티가 결정됨
+    switch (penalty_rand)
+    {
+    case 0:
+        monstertick *= 0.5;
+        break;
+    case 1:
+        playertick *= 1.5;
+        break;
+    }
+    penaltyPrint(penalty_rand);
+}
+
 void drawSideBox() {
     gotoxy(MAP_WIDTH + 3, 3);
     puts("=============================================================================");
@@ -707,6 +709,7 @@ void drawSideBox() {
     gotoxy(MAP_WIDTH + 3, 19);
     puts("=============================================================================");
 }
+
 void eraseSideBox() {
     for (int i = 0; i <= 16; i++) {
         gotoxy(MAP_WIDTH + 3, 3 + i);
@@ -714,8 +717,6 @@ void eraseSideBox() {
     }
 }
 
-//이득
-//선택지
 void favorableQuestion() {
     char* question[] = {
     "나 요즘 너무 살찐 것 같지? ㅠㅠ",
@@ -813,38 +814,7 @@ void favorableQuestion() {
         questionNum = 0;
     eraseSideBox();
 }
-//랜덤 상점
-void rand_store()
-{
-    drawSideBox();
-    int choose;
-    gotoxy(MAP_WIDTH + 6, 5);
-    printf("1.몬스터 속도 감소(게임 시간 20초 소모)");
-    gotoxy(MAP_WIDTH + 6, 6);
-    printf("2.플레이어 속도 증가(게임 시간 20초 소모)");
-    gotoxy(MAP_WIDTH + 6, 7);
-    printf("3.남은 시간 증가(게임 시간 30초 증가)");
-    gotoxy(MAP_WIDTH + 6, 8);
-    printf("선택: ");
-    gotoxy(MAP_WIDTH + 10, 8);
-    choose = _getch();//선택값 입력
-    switch (choose)// 선택값에 따라 다른 효과
-    {
-    case '1':
-        item_time += 20;
-        monstertick *= 2;
-        break;
-    case '2':
-        item_time += 20;
-        playertick *= 0.5;
-        break;
-    case '3':
-        item_time -= 30;
-        break;
-    }
-    eraseSideBox();
-}
-//이벤트
+
 void eventPrint() {
     drawSideBox();
     gotoxy(MAP_WIDTH + 5, 5);
@@ -854,14 +824,13 @@ void eventPrint() {
     Sleep(500);
     eraseSideBox();
 }
-//위치
+
 void revealTreasureDirection(int i) {
     drawSideBox();
     gotoxy(MAP_WIDTH + 5, 5);
     printf("엿보기 안경 획득!");
     gotoxy(MAP_WIDTH + 5, 6);
-    if (i == 5) {
-        // 보물의 위아래 방향 알려줌
+    if (i == 5) { // 보물의 위아래 방향 알려줌
         if (player.y > treasure.y) {
             printf("보물이 현재 위치보다 위에 있습니다.");
         }
@@ -872,8 +841,7 @@ void revealTreasureDirection(int i) {
             printf("보물이 현재 위치보다 아래에 있습니다.");
         }
     }
-    else if (i == 6) {
-        // 보물의 좌우 방향 알려줌
+    else if (i == 6) { // 보물의 좌우 방향 알려줌
         if (player.x < treasure.x) {
             printf("보물이 현재 위치보다 오른쪽에 있습니다.");
         }
@@ -888,27 +856,12 @@ void revealTreasureDirection(int i) {
     eraseSideBox();
 }
 
-//페널티
-void penalty_func()
-{
-    int temp1 = rand() % 2; //랜덤으로 패널티가 결정됨
-    switch (temp1)
-    {
-    case 0:
-        monstertick *= 0.5;
-        break;
-    case 1:
-        playertick *= 1.5;
-        break;
-    }
-    penaltyPrint(temp1);
-}
-void penaltyPrint(int x) {
+void penaltyPrint(int penalty_rand) {
     drawSideBox();
     gotoxy(MAP_WIDTH + 5, 5);
     printf("벌칙 깃발 발견!");
     gotoxy(MAP_WIDTH + 5, 6);
-    switch (x)
+    switch (penalty_rand)
     {
     case 0:
         printf("몬스터의 속도가 2배 빨라졌습니다!");
@@ -921,26 +874,26 @@ void penaltyPrint(int x) {
     eraseSideBox();
 }
 
-//게임 종료 조건 검사, 게임 종료 확인
-int checkGameEnd() {
-    // 보물을 찾았는지 확인
-    if (endsignal == 1) {
+int checkGameEnd() { //게임 종료 조건 검사, 게임 종료 확인
+    if (endsignal == 1) { // 보물 도달
         endGame(1);
         return 1;
     }
-    // 시간초과 확인
-    else if (endsignal == -1) {
+
+    else if (endsignal == -1) { // 시간초과
         endGame(0);
         return 1;
     }
     else
         return 0;
 }
-//게임 종료 화면
+
 void endGame(int result) {
     system("cls");
 
     PlaySound(NULL, NULL, 0);
+    int screenWidth, screenHeight;
+    getConsoleSize(&screenWidth, &screenHeight);
 
     if (result) {
         calculateScore();
@@ -960,16 +913,26 @@ void endGame(int result) {
         };
         const char* gameOverMessage2 = "시간이 종료되었습니다.";
 
-        printCentered(gameOverMessage, sizeof(gameOverMessage) / sizeof(gameOverMessage[0]), -2);
-        printCentered(&gameOverMessage2, 1, 3);
+        int numLines = sizeof(gameOverMessage) / sizeof(gameOverMessage[0]);
+        int startY = (screenHeight - numLines) / 2;
+
+        for (int i = 0; i < numLines; i++) {
+            int x = (screenWidth - strlen(gameOverMessage[i])) / 2;
+            gotoxy(x, startY + i);
+            printf("%s", gameOverMessage[i]);
+        }
+
+        int x2 = (screenWidth - strlen(gameOverMessage2)) / 2;
+        gotoxy(x2, startY + numLines + 1);
+        printf("%s", gameOverMessage2);
         Sleep(7000);
         menu();
     }
 }
 // 점수 계산
 void calculateScore() {
-    int consoleWidth, consoleHeight;
-    getConsoleSize(&consoleWidth, &consoleHeight);
+    int screenWidth, screenHeight;
+    getConsoleSize(&screenWidth, &screenHeight);
 
     const int requiredScore[] = { 900, 1200, 1500 }; // 각 레벨에서 요구되는 점수
     const char* heartColors[] = { "벌꿀색 하트", "오렌지 하트", "그린 하트", "핑크 하트", "레드 하트" };
@@ -991,17 +954,16 @@ void calculateScore() {
     PlaySound(TEXT("sound\\levelup.wav"), NULL, SND_FILENAME | SND_ASYNC | SND_LOOP);
     system("cls");
 
-    const char* heartColor = heartColors[heartIndex];
-    printCentered(&heartColor, 1, -2);
+    gotoxy((screenWidth - strlen(heartColors[heartIndex])) / 2, (screenHeight / 2) - 2);
+    printf("%s\n", heartColors[heartIndex]);
 
-    // 하트 심볼을 중앙에 배치
-    const char* heartSymbol[] = { "♥" };
+    gotoxy((screenWidth - 1) / 2, screenHeight / 2);
     SetColor(heartColorsCode[heartIndex]);
-    printCentered(heartSymbol, 1, 0);
+    printf("%s", "♥");
     SetColor(15);
 
-    const char* heartDescription = heartDescriptions[heartIndex];
-    printCentered(&heartDescription, 1, 2);
+    gotoxy((screenWidth - strlen(heartDescriptions[heartIndex])) / 2, (screenHeight / 2) + 2);
+    printf("%s", heartDescriptions[heartIndex]);
     Sleep(5000);
     system("cls");
     if (!levelUpCondition) {
@@ -1015,7 +977,13 @@ void calculateScore() {
                     "                                                        ",
                     "                                                        "
         };
-        printCentered(failedMessage, sizeof(failedMessage) / sizeof(failedMessage[0]), -2);
+        int numLines = sizeof(failedMessage) / sizeof(failedMessage[0]);
+        int startY = (screenHeight - numLines) / 2;
+
+        for (int i = 0; i < numLines; i++) {
+            gotoxy((screenWidth - strlen(failedMessage[i])) / 2, startY + i);
+            printf("%s", failedMessage[i]);
+        }
         Sleep(5000);
         menu();
     }
@@ -1023,9 +991,12 @@ void calculateScore() {
         levelUp();
     }
 }
-// 난이도별로 조작
+
 void levelUp() {
     initGameVariables();
+
+    int screenWidth, screenHeight;
+    getConsoleSize(&screenWidth, &screenHeight);
 
     if (level != 3) {
         const char* levelUpMessage[] = {
@@ -1038,15 +1009,27 @@ void levelUp() {
             "                                     | |       ",
             "                                     |_|       "
         };
-        printCentered(levelUpMessage, sizeof(levelUpMessage) / sizeof(levelUpMessage[0]), -2);
 
+        int numLines = sizeof(levelUpMessage) / sizeof(levelUpMessage[0]);
+        int y = (screenHeight - numLines) / 2;
+
+        for (int i = 0; i < numLines; i++) {
+            int x = (screenWidth - strlen(levelUpMessage[i])) / 2;
+            gotoxy(x, y + i);
+            printf("%s", levelUpMessage[i]);
+        }
         const char* nextLevelMessage1 = "다음 레벨로 이동합니다...";
         const char* nextLevelMessage2 = "이동하려면 아무 키나 누르세요.";
-        printCentered(&nextLevelMessage1, 1, 2);
-        printCentered(&nextLevelMessage2, 1, 3);
+        int x1 = (screenWidth - strlen(nextLevelMessage1)) / 2;
+        int x2 = (screenWidth - strlen(nextLevelMessage2)) / 2;
 
-        while (_kbhit()) _getch(); // 버퍼를 비움
-        _getch();
+        gotoxy(x1, y + numLines + 2);
+        printf("%s", nextLevelMessage1);
+        gotoxy(x2, y + numLines + 3);
+        printf("%s", nextLevelMessage2);
+
+        while (_kbhit())
+            _getch();
 
         switch (level) {
         case 1:
@@ -1075,14 +1058,29 @@ void levelUp() {
 
         const char* queenMessage = "당신은 마계의 여왕이 되는데 성공하셨습니다.";
 
-        printCentered(gameClearMessage, sizeof(gameClearMessage) / sizeof(gameClearMessage[0]), -2);
-        printCentered(&queenMessage, 1, 1);
+        int numLines = sizeof(gameClearMessage) / sizeof(gameClearMessage[0]);
+        int y = (screenHeight - numLines) / 2;
 
-        Sleep(1000);
+        for (int i = 0; i < numLines; i++) {
+            int x = (screenWidth - strlen(gameClearMessage[i])) / 2;
+            gotoxy(x, y + i);
+            printf("%s", gameClearMessage[i]);
+        }
+
+        int xQueen = (screenWidth - strlen(queenMessage)) / 2;
+        gotoxy(xQueen, y + numLines + 1);
+        printf("%s", queenMessage);
+
+        Sleep(2000);
         const char* menuMessage1 = "메뉴로 다시 돌아갑니다...";
         const char* menuMessage2 = "이동하려면 아무 키나 누르세요.";
-        printCentered(&menuMessage1, 1, 3);
-        printCentered(&menuMessage2, 1, 4);
+        int xMenu1 = (screenWidth - strlen(menuMessage1)) / 2;
+        int xMenu2 = (screenWidth - strlen(menuMessage2)) / 2;
+
+        gotoxy(xMenu1, y + numLines + 3);
+        printf("%s", menuMessage1);
+        gotoxy(xMenu2, y + numLines + 4);
+        printf("%s", menuMessage2);
 
         _getch();
         menu();
@@ -1102,21 +1100,6 @@ void startHardGame() {
     level = 3;
     monsterNum = HARD_MONSTER;
     gameStart();
-}
-
-// 콘솔 크기에 맞춰 중앙에 텍스트 출력하는 함수
-void printCentered(const char* text[], int numLines, int yOffset) {
-    // 각 줄의 길이와 콘솔의 중앙 좌표를 계산하여 출력
-    int consoleWidth, consoleHeight;
-    getConsoleSize(&consoleWidth, &consoleHeight);
-
-    for (int i = 0; i < numLines; i++) {
-        int lineLength = strlen(text[i]);
-        int x = (consoleWidth - lineLength) / 2;
-        int y = (consoleHeight - numLines) / 2 + i + yOffset;
-        gotoxy(x, y);
-        printf("%s", text[i]);
-    }
 }
 
 //API
@@ -1155,6 +1138,7 @@ void gotoxy(int x, int y)
     POS.Y = y;
     SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), POS);
 }
+
 void CursorControl(bool flag)
 {
     HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -1162,15 +1146,4 @@ void CursorControl(bool flag)
     GetConsoleCursorInfo(handle, &cci);
     cci.bVisible = flag;
     SetConsoleCursorInfo(handle, &cci);
-}
-void getConsoleSize(int* width, int* height) {
-    CONSOLE_SCREEN_BUFFER_INFO csbi;
-    int cols, rows;
-
-    GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
-    cols = csbi.srWindow.Right - csbi.srWindow.Left + 1;
-    rows = csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
-
-    *width = cols;
-    *height = rows;
 }
