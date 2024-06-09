@@ -22,6 +22,15 @@ typedef struct {
 } Pointer;
 
 //기호상수
+#define BAR_LENGTH 40
+#define WALL 0
+#define SPACE 1
+#define PLAYER 2
+#define TREASURE 3
+#define GIFT 4
+#define PENALTY 5
+#define MONSTER 6
+
 #define MENU_LEFT_ALIGN 15
 #define MENU_TOP_ALIGN 9
 #define MENU_LINE_SPACE 3
@@ -37,7 +46,7 @@ typedef struct {
 #define HARD_MONSTER 9
 
 #define PLAYTIME 180
-#define rand_store_chance 5
+#define RAND_STORE_CHANCE 0 // 변경 필요
 
 char map[MAP_HEIGHT][MAP_WIDTH];
 Pointer player;
@@ -66,8 +75,8 @@ void eraseSelectionBox(int x, int y);
 
 int gameStart();
 void printProgressBar(int elapsed, int total);
-void movePlayer(Pointer* pos, int dx, int dy);
-void printPlayer();
+void printPlayer(Pointer* pos, int dx, int dy);
+void movePlayer();
 void moveMonster(Pointer* monster);
 void printMonster();
 
@@ -77,7 +86,7 @@ void initTick();
 void initGameVariables();
 
 //void printThings();
-void checkErasing(int x, int y);
+
 
 void drawSideBox();
 void eraseSideBox();
@@ -109,18 +118,21 @@ void endGame(int result);
 
 //void printAtPosition(int position[2], const char* symbol, int color);
 void calculateScore();
+void printCentered(const char* text[], int numLines, int yOffset);
 
 //API
 void slowPrint(unsigned long speed, const char* s);
 void SetColor(int colorNum);
 void gotoxy(int x, int y);
 void CursorControl(bool flag);
+void getConsoleSize(int* width, int* height);
 
 // 변수
+int item_time = 0;
 int gametime = 180;//게임 시간
 int score = 0;
-double playertick = 31.25;
-double monstertick = 125;
+double playertick;
+double monstertick;
 int level = 1;
 int endsignal;
 int treasureFound = 0;
@@ -137,3 +149,4 @@ int monsterNum;
 int giftNum;
 int penaltyNum;
 int questionNum = 0;
+int consoleWidth, consoleHeight;
